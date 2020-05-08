@@ -1,0 +1,3 @@
+rootProject.name='RoomExplorer'
+include ':app'
+include ':library'
