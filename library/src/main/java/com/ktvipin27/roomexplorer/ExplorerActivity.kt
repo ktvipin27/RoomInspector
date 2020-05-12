@@ -1,5 +1,6 @@
 package com.ktvipin27.roomexplorer
 
+import android.database.SQLException
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -7,6 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.android.synthetic.main.activity_explorer.*
 
 
@@ -42,10 +44,8 @@ class ExplorerActivity : AppCompatActivity() {
     private fun getTableNames() {
         // a query which returns a cursor with the list of tables in the database.
         // We use this cursor to populate spinner in the first row
-        val queryResult: QueryResult =
-            getData(Queries.GET_TABLE_NAMES)
 
-        when (queryResult) {
+        when (val queryResult = getData(Queries.GET_TABLE_NAMES)) {
             is QueryResult.Success -> {
                 val tableNames = arrayListOf<String>()
                 val cursor = queryResult.cursor
@@ -54,6 +54,7 @@ class ExplorerActivity : AppCompatActivity() {
                     //add names of the table to table names array list
                     tableNames.add(cursor.getString(0))
                 } while (cursor.moveToNext())
+                cursor.close()
                 initSpinner(tableNames)
             }
             is QueryResult.Error -> {
@@ -83,25 +84,44 @@ class ExplorerActivity : AppCompatActivity() {
                 id: Long
             ) {
                 toast(tableNames[position])
+                displayCount(tableNames[position])
             }
 
         }
     }
 
-    private fun getData(query: String): QueryResult {
-        val roomDatabase = Room.databaseBuilder(this, databaseClass, databaseName).build()
-        val sqlDB = roomDatabase.openHelper.writableDatabase
-
-        return try {
-            //execute the query results will be save in Cursor c
-            val c = sqlDB.query(query, null)
-            if (null != c && c.count > 0) {
-                QueryResult.Success(c)
-            } else
-                QueryResult.Error(java.lang.Exception())
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            QueryResult.Error(ex)
+    private fun displayCount(tableName: String) {
+        when (val queryResult = getData(Queries.GET_COUNT + tableName)) {
+            is QueryResult.Success -> {
+                val cursor = queryResult.cursor
+                cursor.moveToFirst()
+                val count = cursor.getInt(0)
+                tv_record_count.text = getString(R.string.number_of_records, count)
+                cursor.close()
+            }
+            is QueryResult.Error -> {
+                //TODO handle error
+            }
         }
+    }
+
+    private fun getData(query: String, bindArgs: Array<Any>? = null): QueryResult = try {
+        //execute the query results will be save in Cursor c
+        val c = supportSQLiteDatabase().query(query, bindArgs)
+        if (null != c && c.count > 0) {
+            QueryResult.Success(c)
+        } else
+            QueryResult.Error(java.lang.Exception())
+    } catch (ex: SQLException) {
+        ex.printStackTrace()
+        QueryResult.Error(ex)
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        QueryResult.Error(ex)
+    }
+
+    private fun supportSQLiteDatabase(): SupportSQLiteDatabase {
+        val roomDatabase = Room.databaseBuilder(this, databaseClass, databaseName).build()
+        return roomDatabase.openHelper.writableDatabase
     }
 }
