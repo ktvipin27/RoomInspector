@@ -33,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
                 Room.databaseBuilder(context, AppDatabase::class.java, DB_NAME)
             return database
                 .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
                 .build()
         }
     }

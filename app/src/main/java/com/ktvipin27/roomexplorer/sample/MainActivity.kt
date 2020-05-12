@@ -21,7 +21,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         button1.setOnClickListener {
-            db.personDAO().insert(Person(0, "Person ${Random().nextInt()}"))
+            db.personDAO().insert(
+                Person(
+                    0,
+                    "Person ${Random().nextInt()}",
+                    "Person ${Random().nextInt()}",
+                    Random().nextInt(100),
+                    "Address ${Random().nextInt()}"
+                )
+            )
         }
 
         button2.setOnClickListener {
