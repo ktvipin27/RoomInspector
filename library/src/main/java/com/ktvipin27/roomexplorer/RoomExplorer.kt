@@ -16,18 +16,18 @@ object RoomExplorer {
     /**
      * Launches [ExplorerActivity] from the context passed in the method.
      * @param context The context such as any activity or fragment or context reference
-     * @param databaseClass The database class registered in Room with @Database annotation and extended with RoomDatabase
+     * @param dbClass The database class registered in Room with @Database annotation and extended with RoomDatabase
      * @param dbName The name of your Room Database
      */
     fun explore(
         context: Context,
-        databaseClass: Class<out RoomDatabase>,
+        dbClass: Class<out RoomDatabase>,
         dbName: String
     ) {
         Intent(context, ExplorerActivity::class.java)
             .apply {
                 putExtras(
-                    bundleOf(KEY_DATABASE_CLASS to databaseClass, KEY_DATABASE_NAME to dbName)
+                    bundleOf(KEY_DATABASE_CLASS to dbClass, KEY_DATABASE_NAME to dbName)
                 )
             }
             .also { context.startActivity(it) }

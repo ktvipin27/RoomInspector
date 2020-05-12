@@ -1,1 +1,4 @@
-<resources></resources>
+<resources>
+    <string name="choose_table">Choose Table</string>
+    <string name="number_of_records">Number of Records</string>
+</resources>
