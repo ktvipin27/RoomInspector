@@ -1,10 +1,14 @@
 package com.ktvipin27.roomexplorer
 
 import android.database.SQLException
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -85,8 +89,59 @@ class ExplorerActivity : AppCompatActivity() {
             ) {
                 toast(tableNames[position])
                 displayCount(tableNames[position])
+                displayData(tableNames[position])
             }
 
+        }
+    }
+
+    private fun displayData(tableName: String) {
+        tl.removeAllViews()
+        when (val queryResult = getData(Queries.GET_TABLE_DATA + tableName)) {
+            is QueryResult.Success -> {
+                val cursor = queryResult.cursor
+
+                //display the first row of the table with column names of the table selected by the user
+                val th = TableRow(this)
+                cursor.moveToFirst()
+                for (i in 0 until cursor.columnCount) {
+                    TextView(this)
+                        .apply {
+                            setPadding(10, 10, 10, 10)
+                            text = cursor.getColumnName(i)
+                            setTextColor(Color.BLACK)
+                            typeface = Typeface.DEFAULT_BOLD
+                        }.also {
+                            th.addView(it)
+                        }
+                }
+                tl.addView(th)
+                do {
+                    val tr = TableRow(applicationContext).apply {
+                        setPadding(0, 2, 0, 2)
+                    }
+                    for (i in 0 until cursor.columnCount) {
+                        TextView(this)
+                            .apply {
+                                setPadding(10, 10, 10, 10)
+                                text = try {
+                                    cursor.getString(i)
+                                } catch (e: Exception) {
+                                    ""
+                                }
+                                setTextColor(Color.BLACK)
+                                typeface = Typeface.DEFAULT
+                            }.also {
+                                tr.addView(it)
+                            }
+                    }
+                    tl.addView(tr)
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+            is QueryResult.Error -> {
+                //TODO handle error
+            }
         }
     }
 
