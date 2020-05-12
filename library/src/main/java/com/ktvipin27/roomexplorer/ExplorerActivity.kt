@@ -87,11 +87,25 @@ class ExplorerActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                toast(tableNames[position])
                 displayCount(tableNames[position])
                 displayData(tableNames[position])
             }
 
+        }
+    }
+
+    private fun displayCount(tableName: String) {
+        when (val queryResult = getData(Queries.GET_COUNT + tableName)) {
+            is QueryResult.Success -> {
+                val cursor = queryResult.cursor
+                cursor.moveToFirst()
+                val count = cursor.getInt(0)
+                tv_record_count.text = getString(R.string.number_of_records, count)
+                cursor.close()
+            }
+            is QueryResult.Error -> {
+                //TODO handle error
+            }
         }
     }
 
@@ -137,21 +151,6 @@ class ExplorerActivity : AppCompatActivity() {
                     }
                     tl.addView(tr)
                 } while (cursor.moveToNext())
-                cursor.close()
-            }
-            is QueryResult.Error -> {
-                //TODO handle error
-            }
-        }
-    }
-
-    private fun displayCount(tableName: String) {
-        when (val queryResult = getData(Queries.GET_COUNT + tableName)) {
-            is QueryResult.Success -> {
-                val cursor = queryResult.cursor
-                cursor.moveToFirst()
-                val count = cursor.getInt(0)
-                tv_record_count.text = getString(R.string.number_of_records, count)
                 cursor.close()
             }
             is QueryResult.Error -> {
