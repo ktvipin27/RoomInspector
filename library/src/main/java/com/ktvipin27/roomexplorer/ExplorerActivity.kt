@@ -19,7 +19,6 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.android.synthetic.main.activity_explorer.*
 
-
 /**
  * Created by Vipin KT on 08/05/20
  */
@@ -50,6 +49,7 @@ class ExplorerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_explorer)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
 
         sp_table.adapter = tableNamesAdapter
         sp_table.onItemSelectedListener = tableNameSelectedListener
