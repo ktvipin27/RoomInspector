@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.iterator
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -53,24 +54,16 @@ class ExplorerActivity : AppCompatActivity() {
         sp_table.adapter = tableNamesAdapter
         sp_table.onItemSelectedListener = tableNameSelectedListener
 
-        intent.extras?.let {
-            if (it.containsKey(RoomExplorer.KEY_DATABASE_CLASS)) {
-                databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
-            } else {
-                throw RuntimeException("No database class passed in the launch Intent.")
-            }
-            if (it.containsKey(RoomExplorer.KEY_DATABASE_NAME)) {
-                databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
-            } else {
-                throw RuntimeException("No database name passed in the launch Intent.")
-            }
-        } ?: throw RuntimeException("No data passed in the launch Intent.")
+        parseIntent()
 
         getTableNames()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_explorer, menu)
+        menu?.iterator()?.forEach {
+            it.isVisible = !tableNamesAdapter.isEmpty
+        }
         return true
     }
 
@@ -80,6 +73,18 @@ class ExplorerActivity : AppCompatActivity() {
         R.id.action_drop -> true.also { dropTable() }
         else -> super.onOptionsItemSelected(item)
     }
+
+    private fun parseIntent() = intent.extras?.let {
+
+        if (it.containsKey(RoomExplorer.KEY_DATABASE_CLASS))
+            databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
+        else toast(R.string.error_no_db_class).also { finish() }
+
+        if (it.containsKey(RoomExplorer.KEY_DATABASE_NAME))
+            databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
+        else toast(R.string.error_no_db_name).also { finish() }
+
+    } ?: toast(R.string.error_no_data_passed).also { finish() }
 
     private fun getTableNames() {
         tableNamesAdapter.clear()
@@ -93,13 +98,17 @@ class ExplorerActivity : AppCompatActivity() {
                 } while (cursor.moveToNext())
                 cursor.close()
             }
-            is QueryResult.Error -> {
-                //TODO handle error
-            }
+            is QueryResult.Error -> toast(
+                getString(
+                    R.string.error_operation_failed,
+                    queryResult.exception.message
+                )
+            )
         }
         tableNamesAdapter.notifyDataSetChanged()
         if (!tableNamesAdapter.isEmpty)
             sp_table.setSelection(0)
+        invalidateOptionsMenu()
     }
 
     private fun displayData() {
@@ -123,7 +132,7 @@ class ExplorerActivity : AppCompatActivity() {
                 }
                 tl.addView(th)
                 do {
-                    val tr = TableRow(applicationContext).apply {
+                    val tr = TableRow(this).apply {
                         setPadding(0, 2, 0, 2)
                     }
                     for (i in 0 until cursor.columnCount) {
@@ -145,9 +154,12 @@ class ExplorerActivity : AppCompatActivity() {
                 } while (cursor.moveToNext())
                 cursor.close()
             }
-            is QueryResult.Error -> {
-                //TODO handle error
-            }
+            is QueryResult.Error -> toast(
+                getString(
+                    R.string.error_operation_failed,
+                    queryResult.exception.message
+                )
+            )
         }
     }
 
@@ -162,14 +174,12 @@ class ExplorerActivity : AppCompatActivity() {
                     toast(R.string.message_operation_success)
                     displayData()
                 }
-                is QueryResult.Error -> {
-                    toast(
-                        getString(
-                            R.string.message_operation_failed,
-                            queryResult.exception.message
-                        )
+                is QueryResult.Error -> toast(
+                    getString(
+                        R.string.error_operation_failed,
+                        queryResult.exception.message
                     )
-                }
+                )
             }
         }
     }
@@ -188,14 +198,12 @@ class ExplorerActivity : AppCompatActivity() {
                     else
                         getTableNames()
                 }
-                is QueryResult.Error -> {
-                    toast(
-                        getString(
-                            R.string.message_operation_failed,
-                            queryResult.exception.message
-                        )
+                is QueryResult.Error -> toast(
+                    getString(
+                        R.string.error_operation_failed,
+                        queryResult.exception.message
                     )
-                }
+                )
             }
         }
     }
