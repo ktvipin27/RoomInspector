@@ -1,4 +1,10 @@
 <resources>
     <string name="choose_table">Choose Table</string>
     <string name="number_of_records">Number of Records %d</string>
+    <string name="title_delete_table">Delete Table</string>
+    <string name="message_delete_table">Operation will clear all the data in \"%s\"</string>
+    <string name="title_drop_table">Drop Table</string>
+    <string name="message_drop_table">Operation will remove \"%s\" from database</string>
+    <string name="message_operation_failed">Operation failed : %s</string>
+    <string name="message_operation_success">Operation completed successfully</string>
 </resources>

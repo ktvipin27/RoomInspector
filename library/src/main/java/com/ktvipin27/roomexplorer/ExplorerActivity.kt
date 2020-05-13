@@ -1,9 +1,12 @@
 package com.ktvipin27.roomexplorer
 
+import android.database.Cursor
 import android.database.SQLException
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -23,11 +26,36 @@ class ExplorerActivity : AppCompatActivity() {
 
     private lateinit var databaseClass: Class<out RoomDatabase>
     private lateinit var databaseName: String
+    private val tableNames = arrayListOf<String>()
+    private val tableNamesAdapter: ArrayAdapter<String> by lazy {
+        ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            tableNames
+        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+    }
+    private var selectedTableName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_explorer)
+        setSupportActionBar(toolbar)
+        sp_table.adapter = tableNamesAdapter
+        sp_table.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
 
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                selectedTableName = tableNames[position]
+                displayCount(selectedTableName)
+                displayData(selectedTableName)
+            }
+
+        }
         intent.extras?.let {
             if (it.containsKey(RoomExplorer.KEY_DATABASE_CLASS)) {
                 databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
@@ -45,66 +73,108 @@ class ExplorerActivity : AppCompatActivity() {
         getTableNames()
     }
 
-    private fun getTableNames() {
-        // a query which returns a cursor with the list of tables in the database.
-        // We use this cursor to populate spinner in the first row
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_explorer, menu)
+        return true
+    }
 
-        when (val queryResult = getData(Queries.GET_TABLE_NAMES)) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_add -> {
+            true
+        }
+        R.id.action_delete -> {
+            deleteTable(selectedTableName)
+            true
+        }
+        R.id.action_drop -> {
+            dropTable(selectedTableName)
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun getTableNames() {
+        tableNames.clear()
+        when (
+            val queryResult = getData(Queries.GET_TABLE_NAMES)) {
             is QueryResult.Success -> {
-                val tableNames = arrayListOf<String>()
-                val cursor = queryResult.cursor
+                val cursor = queryResult.data
                 cursor.moveToFirst()
                 do {
-                    //add names of the table to table names array list
                     tableNames.add(cursor.getString(0))
                 } while (cursor.moveToNext())
                 cursor.close()
-                initSpinner(tableNames)
             }
             is QueryResult.Error -> {
                 //TODO handle error
             }
         }
+        tableNamesAdapter.notifyDataSetChanged()
+        if (tableNames.isNotEmpty())
+            sp_table.setSelection(0)
     }
 
-    private fun initSpinner(tableNames: ArrayList<String>) {
-        // Creating adapter for spinner
-        val dataAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_spinner_item,
-            tableNames
-        )
-        // Drop down layout style - list view
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        // attaching data adapter to spinner
-        sp_table.adapter = dataAdapter
-        sp_table.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                displayCount(tableNames[position])
-                displayData(tableNames[position])
+    private fun deleteTable(tableName: String) {
+        showAlert(
+            getString(R.string.title_delete_table),
+            getString(R.string.message_delete_table, tableName),
+            getString(android.R.string.ok)
+        ) {
+            when (val queryResult = execute(Queries.DELETE_TABLE + tableName)) {
+                is QueryResult.Success -> {
+                    toast(R.string.message_operation_success)
+                    sp_table.setSelection(0)
+                }
+                is QueryResult.Error -> {
+                    toast(
+                        getString(
+                            R.string.message_operation_failed,
+                            queryResult.exception.message
+                        )
+                    )
+                }
             }
+        }
+    }
 
+    private fun dropTable(tableName: String) {
+        showAlert(
+            getString(R.string.title_drop_table),
+            getString(R.string.message_drop_table, tableName),
+            getString(android.R.string.ok)
+        ) {
+            when (val queryResult = execute(Queries.DROP_TABLE + tableName)) {
+                is QueryResult.Success -> {
+                    toast(R.string.message_operation_success)
+                    if (tableNames.size < 1)
+                        refreshActivity()
+                    else
+                        getTableNames()
+                }
+                is QueryResult.Error -> {
+                    toast(
+                        getString(
+                            R.string.message_operation_failed,
+                            queryResult.exception.message
+                        )
+                    )
+                }
+            }
         }
     }
 
     private fun displayCount(tableName: String) {
         when (val queryResult = getData(Queries.GET_COUNT + tableName)) {
             is QueryResult.Success -> {
-                val cursor = queryResult.cursor
+                val cursor = queryResult.data
                 cursor.moveToFirst()
                 val count = cursor.getInt(0)
                 tv_record_count.text = getString(R.string.number_of_records, count)
                 cursor.close()
             }
             is QueryResult.Error -> {
-                //TODO handle error
+                tv_record_count.text = getString(R.string.number_of_records, 0)
+                toast(getString(R.string.message_operation_failed, queryResult.exception.message))
             }
         }
     }
@@ -113,7 +183,7 @@ class ExplorerActivity : AppCompatActivity() {
         tl.removeAllViews()
         when (val queryResult = getData(Queries.GET_TABLE_DATA + tableName)) {
             is QueryResult.Success -> {
-                val cursor = queryResult.cursor
+                val cursor = queryResult.data
 
                 //display the first row of the table with column names of the table selected by the user
                 val th = TableRow(this)
@@ -159,13 +229,23 @@ class ExplorerActivity : AppCompatActivity() {
         }
     }
 
-    private fun getData(query: String, bindArgs: Array<Any>? = null): QueryResult = try {
-        //execute the query results will be save in Cursor c
+    private fun getData(query: String, bindArgs: Array<Any>? = null): QueryResult<Cursor> = try {
         val c = supportSQLiteDatabase().query(query, bindArgs)
-        if (null != c && c.count > 0) {
+        if (null != c) {
             QueryResult.Success(c)
         } else
             QueryResult.Error(java.lang.Exception())
+    } catch (ex: SQLException) {
+        ex.printStackTrace()
+        QueryResult.Error(ex)
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        QueryResult.Error(ex)
+    }
+
+    private fun execute(query: String): QueryResult<Any> = try {
+        supportSQLiteDatabase().execSQL(query)
+        QueryResult.Success("")
     } catch (ex: SQLException) {
         ex.printStackTrace()
         QueryResult.Error(ex)
