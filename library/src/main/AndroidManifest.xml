@@ -3,7 +3,9 @@
     package="com.ktvipin27.roomexplorer">
 
     <application>
-        <activity android:name=".ExplorerActivity"></activity>
+        <activity
+            android:name=".ExplorerActivity"
+            android:theme="@style/RoomExplorerTheme" />
     </application>
 
 </manifest>
