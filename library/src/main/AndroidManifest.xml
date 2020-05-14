@@ -4,7 +4,11 @@
 
     <application>
         <activity
-            android:name=".ExplorerActivity"
+            android:name=".RoomExplorerMainActivity"
+            android:theme="@style/RoomExplorerTheme" />
+        <activity
+            android:name=".RoomExplorerQueryActivity"
+            android:label="@string/action_custom_query"
             android:theme="@style/RoomExplorerTheme" />
     </application>
 

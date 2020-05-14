@@ -2,7 +2,9 @@ package com.ktvipin27.roomexplorer
 
 import android.R
 import android.content.Context
+import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +17,12 @@ fun AppCompatActivity.refreshActivity() {
     startActivity(intent)
 }
 
-fun Context.toast(messageId: Int) {
-    Toast.makeText(this, getString(messageId), Toast.LENGTH_SHORT).show()
-}
+fun Context.toast(messageId: Int) = toast(getString(messageId))
 
 fun Context.toast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
+        setGravity(Gravity.CENTER, 0, 0)
+    }.show()
 }
 
 fun AppCompatActivity.showAlert(
@@ -59,5 +61,13 @@ private fun AppCompatActivity.showDialog(
     ) { dialog, which -> dialog.dismiss() }
     if (!isFinishing) {
         builder.create().show()
+    }
+}
+
+fun AppCompatActivity.hideKeyboard() {
+    val view = this.currentFocus
+    if (view != null) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

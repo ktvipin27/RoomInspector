@@ -1,7 +1,5 @@
 package com.ktvipin27.roomexplorer
 
-import android.database.Cursor
-import android.database.SQLException
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -11,18 +9,17 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.iterator
-import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.android.synthetic.main.activity_explorer.*
+import kotlinx.android.synthetic.main.activity_room_explorer_main.*
 
 /**
  * Created by Vipin KT on 08/05/20
  */
-class ExplorerActivity : AppCompatActivity() {
+internal class RoomExplorerMainActivity : AppCompatActivity() {
 
     private lateinit var databaseClass: Class<out RoomDatabase>
     private lateinit var databaseName: String
+    private lateinit var queryRunner: QueryRunner
     private val tableNamesAdapter: ArrayAdapter<String> by lazy {
         ArrayAdapter(
             this,
@@ -44,7 +41,7 @@ class ExplorerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_explorer)
+        setContentView(R.layout.activity_room_explorer_main)
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
 
@@ -69,25 +66,27 @@ class ExplorerActivity : AppCompatActivity() {
         R.id.action_add -> true.also { addRow() }
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
+        R.id.action_custom -> true.also { RoomExplorer.query(this, databaseClass, databaseName) }
         else -> super.onOptionsItemSelected(item)
     }
 
     private fun parseIntent() = intent.extras?.let {
 
-        if (it.containsKey(RoomExplorer.KEY_DATABASE_CLASS))
-            databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
-        else toast(R.string.error_no_db_class).also { finish() }
+        if (!it.containsKey(RoomExplorer.KEY_DATABASE_CLASS))
+            toast(R.string.error_no_db_class).also { finish() }
+        if (!it.containsKey(RoomExplorer.KEY_DATABASE_NAME))
+            toast(R.string.error_no_db_name).also { finish() }
 
-        if (it.containsKey(RoomExplorer.KEY_DATABASE_NAME))
-            databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
-        else toast(R.string.error_no_db_name).also { finish() }
+        databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
+        databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
 
+        queryRunner = QueryRunner(this, databaseClass, databaseName)
     } ?: toast(R.string.error_no_data_passed).also { finish() }
 
     private fun getTableNames() {
         tableNamesAdapter.clear()
         when (
-            val queryResult = getData(Queries.GET_TABLE_NAMES)) {
+            val queryResult = queryRunner.getData(Queries.GET_TABLE_NAMES)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 cursor.moveToFirst()
@@ -110,7 +109,7 @@ class ExplorerActivity : AppCompatActivity() {
 
     private fun displayData() {
         tl.removeAllViews()
-        when (val queryResult = getData(Queries GET_TABLE_DATA selectedTableName)) {
+        when (val queryResult = queryRunner.getData(Queries GET_TABLE_DATA selectedTableName)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 tv_record_count.text = getString(R.string.number_of_records, cursor.count)
@@ -159,7 +158,7 @@ class ExplorerActivity : AppCompatActivity() {
     }
 
     private fun addRow() {
-        when (val queryResult = getData(Queries GET_COLUMN_NAMES selectedTableName)) {
+        when (val queryResult = queryRunner.getData(Queries GET_COLUMN_NAMES selectedTableName)) {
             is QueryResult.Success -> {
                 val ll = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
@@ -224,7 +223,8 @@ class ExplorerActivity : AppCompatActivity() {
                 ) {
                     val values = etList.map { it.text.toString() }
 
-                    when (val result = execute(Queries INSERT Pair(selectedTableName, values))) {
+                    when (val result =
+                        queryRunner.execute(Queries INSERT Pair(selectedTableName, values))) {
                         is QueryResult.Success -> {
                             toast(R.string.message_operation_success)
                             displayData()
@@ -253,7 +253,7 @@ class ExplorerActivity : AppCompatActivity() {
             getString(R.string.message_delete_table, selectedTableName),
             getString(android.R.string.ok)
         ) {
-            when (val queryResult = execute(Queries DELETE_TABLE selectedTableName)) {
+            when (val queryResult = queryRunner.execute(Queries DELETE_TABLE selectedTableName)) {
                 is QueryResult.Success -> {
                     toast(R.string.message_operation_success)
                     displayData()
@@ -274,7 +274,7 @@ class ExplorerActivity : AppCompatActivity() {
             getString(R.string.message_drop_table, selectedTableName),
             getString(android.R.string.ok)
         ) {
-            when (val queryResult = execute(Queries DROP_TABLE selectedTableName)) {
+            when (val queryResult = queryRunner.execute(Queries DROP_TABLE selectedTableName)) {
                 is QueryResult.Success -> {
                     toast(R.string.message_operation_success)
                     if (tableNamesAdapter.count < 2)
@@ -290,32 +290,5 @@ class ExplorerActivity : AppCompatActivity() {
                 )
             }
         }
-    }
-
-    private fun getData(query: String, bindArgs: Array<Any>? = null): QueryResult<Cursor> = try {
-        val c = supportSQLiteDatabase().query(query, bindArgs)
-        if (null != c) QueryResult.Success(c) else QueryResult.Error(java.lang.Exception())
-    } catch (ex: SQLException) {
-        ex.printStackTrace()
-        QueryResult.Error(ex)
-    } catch (ex: Exception) {
-        ex.printStackTrace()
-        QueryResult.Error(ex)
-    }
-
-    private fun execute(query: String): QueryResult<Any> = try {
-        supportSQLiteDatabase().execSQL(query)
-        QueryResult.Success("")
-    } catch (ex: SQLException) {
-        ex.printStackTrace()
-        QueryResult.Error(ex)
-    } catch (ex: Exception) {
-        ex.printStackTrace()
-        QueryResult.Error(ex)
-    }
-
-    private fun supportSQLiteDatabase(): SupportSQLiteDatabase {
-        val roomDatabase = Room.databaseBuilder(this, databaseClass, databaseName).build()
-        return roomDatabase.openHelper.writableDatabase
     }
 }

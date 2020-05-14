@@ -5,6 +5,7 @@
     <string name="action_add_row">Add Row</string>
     <string name="action_delete_table">Delete Table</string>
     <string name="action_drop_table">Drop Table</string>
+    <string name="action_custom_query">Custom Query</string>
     <string name="message_delete_table">Operation will clear all the data in \"%s\"</string>
     <string name="message_drop_table">Operation will remove \"%s\" from database</string>
     <string name="message_operation_success">Operation completed successfully</string>
@@ -12,4 +13,6 @@
     <string name="error_no_db_class">No database class passed in the launch Intent.</string>
     <string name="error_no_db_name">No database name passed in the launch Intent.</string>
     <string name="error_no_data_passed">No data passed in the launch Intent.</string>
+    <string name="action_submit">Submit</string>
+    <string name="hint_enter_query">Enter query</string>
 </resources>
