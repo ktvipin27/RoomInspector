@@ -1,6 +1,7 @@
 <resources>
     <string name="choose_table">Choose Table</string>
     <string name="number_of_records">Number of Records %d</string>
+    <string name="action_add_refresh">Refresh</string>
     <string name="action_add_row">Add Row</string>
     <string name="action_delete_table">Delete Table</string>
     <string name="action_drop_table">Drop Table</string>

@@ -65,6 +65,7 @@ class ExplorerActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_refresh -> true.also { displayData() }
         R.id.action_add -> true.also { addRow() }
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
