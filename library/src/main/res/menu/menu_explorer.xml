@@ -3,11 +3,11 @@
 
     <item
         android:id="@+id/action_add"
-        android:title="Add Row" />
+        android:title="@string/action_add_row" />
     <item
         android:id="@+id/action_delete"
-        android:title="Delete Table" />
+        android:title="@string/action_delete_table" />
     <item
         android:id="@+id/action_drop"
-        android:title="Drop Table" />
+        android:title="@string/action_drop_table" />
 </menu>

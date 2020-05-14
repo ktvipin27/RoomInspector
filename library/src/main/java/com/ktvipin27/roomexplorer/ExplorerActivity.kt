@@ -8,10 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.TableRow
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.iterator
 import androidx.room.Room
@@ -68,7 +65,7 @@ class ExplorerActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_add -> true
+        R.id.action_add -> true.also { addRow() }
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
         else -> super.onOptionsItemSelected(item)
@@ -93,9 +90,8 @@ class ExplorerActivity : AppCompatActivity() {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 cursor.moveToFirst()
-                do {
-                    tableNamesAdapter.add(cursor.getString(0))
-                } while (cursor.moveToNext())
+                do tableNamesAdapter.add(cursor.getString(0))
+                while (cursor.moveToNext())
                 cursor.close()
             }
             is QueryResult.Error -> toast(
@@ -113,13 +109,13 @@ class ExplorerActivity : AppCompatActivity() {
 
     private fun displayData() {
         tl.removeAllViews()
-        when (val queryResult = getData(Queries.GET_TABLE_DATA + selectedTableName)) {
+        when (val queryResult = getData(Queries GET_TABLE_DATA selectedTableName)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 tv_record_count.text = getString(R.string.number_of_records, cursor.count)
                 val th = TableRow(this)
                 cursor.moveToFirst()
-                for (i in 0 until cursor.columnCount) {
+                for (i in 0 until cursor.columnCount)
                     TextView(this)
                         .apply {
                             setPadding(10, 10, 10, 10)
@@ -129,13 +125,12 @@ class ExplorerActivity : AppCompatActivity() {
                         }.also {
                             th.addView(it)
                         }
-                }
                 tl.addView(th)
                 do {
                     val tr = TableRow(this).apply {
                         setPadding(0, 2, 0, 2)
                     }
-                    for (i in 0 until cursor.columnCount) {
+                    for (i in 0 until cursor.columnCount)
                         TextView(this)
                             .apply {
                                 setPadding(10, 10, 10, 10)
@@ -149,7 +144,6 @@ class ExplorerActivity : AppCompatActivity() {
                             }.also {
                                 tr.addView(it)
                             }
-                    }
                     tl.addView(tr)
                 } while (cursor.moveToNext())
                 cursor.close()
@@ -163,13 +157,102 @@ class ExplorerActivity : AppCompatActivity() {
         }
     }
 
+    private fun addRow() {
+        when (val queryResult = getData(Queries GET_COLUMN_NAMES selectedTableName)) {
+            is QueryResult.Success -> {
+                val ll = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    val dialogPadding =
+                        resources.getDimension(R.dimen.dialog_add_row_padding_vertical).toInt()
+                    setPadding(dialogPadding, 0, dialogPadding, 0)
+                }
+                val topMargin =
+                    resources.getDimension(R.dimen.dialog_add_row_item_margin_top).toInt()
+                val etPadding = resources.getDimension(R.dimen.dialog_add_row_item_padding).toInt()
+                val etList = mutableListOf<EditText>()
+                val cursor = queryResult.data
+                cursor.moveToFirst()
+                do {
+                    val columnName = cursor.getString(1)
+                    val tv = TextView(this).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            weight = 1f
+                            setMargins(0, topMargin, 0, 0)
+                        }
+                        text = columnName
+                        setTextColor(Color.BLACK)
+                    }
+                    val et = EditText(this).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            weight = 1f
+                            setMargins(0, topMargin, 0, 0)
+                        }
+                        setPadding(
+                            paddingStart + etPadding,
+                            paddingTop,
+                            paddingEnd + etPadding,
+                            paddingBottom
+                        )
+                        setTextColor(Color.BLACK)
+                        background = getDrawable(R.drawable.bg_spinner)
+                    }
+                    etList.add(et)
+                    val row = LinearLayout(this).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        orientation = LinearLayout.HORIZONTAL
+                        addView(tv)
+                        addView(et)
+                    }
+                    ll.addView(row)
+                } while (cursor.moveToNext())
+                cursor.close()
+                val sv = ScrollView(this).apply { addView(ll) }
+                showAlert(
+                    getString(R.string.action_add_row),
+                    sv,
+                    getString(android.R.string.ok)
+                ) {
+                    val values = etList.map { it.text.toString() }
+
+                    when (val result = execute(Queries INSERT Pair(selectedTableName, values))) {
+                        is QueryResult.Success -> {
+                            toast(R.string.message_operation_success)
+                            displayData()
+                        }
+                        is QueryResult.Error -> toast(
+                            getString(
+                                R.string.error_operation_failed,
+                                result.exception.message
+                            )
+                        )
+                    }
+                }
+            }
+            is QueryResult.Error -> toast(
+                getString(
+                    R.string.error_operation_failed,
+                    queryResult.exception.message
+                )
+            )
+        }
+    }
+
     private fun deleteTable() {
         showAlert(
-            getString(R.string.title_delete_table),
+            getString(R.string.action_delete_table),
             getString(R.string.message_delete_table, selectedTableName),
             getString(android.R.string.ok)
         ) {
-            when (val queryResult = execute(Queries.DELETE_TABLE + selectedTableName)) {
+            when (val queryResult = execute(Queries DELETE_TABLE selectedTableName)) {
                 is QueryResult.Success -> {
                     toast(R.string.message_operation_success)
                     displayData()
@@ -186,11 +269,11 @@ class ExplorerActivity : AppCompatActivity() {
 
     private fun dropTable() {
         showAlert(
-            getString(R.string.title_drop_table),
+            getString(R.string.action_drop_table),
             getString(R.string.message_drop_table, selectedTableName),
             getString(android.R.string.ok)
         ) {
-            when (val queryResult = execute(Queries.DROP_TABLE + selectedTableName)) {
+            when (val queryResult = execute(Queries DROP_TABLE selectedTableName)) {
                 is QueryResult.Success -> {
                     toast(R.string.message_operation_success)
                     if (tableNamesAdapter.count < 2)
@@ -210,10 +293,7 @@ class ExplorerActivity : AppCompatActivity() {
 
     private fun getData(query: String, bindArgs: Array<Any>? = null): QueryResult<Cursor> = try {
         val c = supportSQLiteDatabase().query(query, bindArgs)
-        if (null != c) {
-            QueryResult.Success(c)
-        } else
-            QueryResult.Error(java.lang.Exception())
+        if (null != c) QueryResult.Success(c) else QueryResult.Error(java.lang.Exception())
     } catch (ex: SQLException) {
         ex.printStackTrace()
         QueryResult.Error(ex)

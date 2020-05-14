@@ -1,6 +1,8 @@
 package com.ktvipin27.roomexplorer
 
+import android.R
 import android.content.Context
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -26,10 +28,26 @@ fun AppCompatActivity.showAlert(
     message: String,
     positiveButton: String,
     onSubmit: () -> Unit
+) = showDialog(title, message, null, positiveButton, onSubmit)
+
+fun AppCompatActivity.showAlert(
+    title: String,
+    view: View,
+    positiveButton: String,
+    onSubmit: () -> Unit
+) = showDialog(title, null, view, positiveButton, onSubmit)
+
+private fun AppCompatActivity.showDialog(
+    title: String,
+    message: String?,
+    view: View?,
+    positiveButton: String,
+    onSubmit: () -> Unit
 ) {
     val builder = AlertDialog.Builder(this)
     builder.setTitle(title)
     builder.setMessage(message)
+    builder.setView(view)
     builder.setPositiveButton(
         positiveButton
     ) { dialog, which ->
@@ -37,7 +55,7 @@ fun AppCompatActivity.showAlert(
         dialog.dismiss()
     }
     builder.setNegativeButton(
-        getString(android.R.string.cancel)
+        getString(R.string.cancel)
     ) { dialog, which -> dialog.dismiss() }
     if (!isFinishing) {
         builder.create().show()
