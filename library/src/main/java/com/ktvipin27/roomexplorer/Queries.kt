@@ -19,4 +19,25 @@ object Queries {
         insertQuery += ")"
         return insertQuery
     }
+
+    fun getUpdateQuery(
+        tableName: String,
+        columnNames: List<String>,
+        oldValues: List<String>,
+        newValues: List<String>
+    ): String {
+        var query = "Update $tableName set "
+        Pair(columnNames, newValues).forEachIndexed { index, columnName, value ->
+            query += "$columnName = '$value'"
+            if (index != columnNames.size - 1)
+                query += ", "
+        }
+        query += " where "
+        Pair(columnNames, oldValues).forEachIndexed { index, columnName, value ->
+            query += "$columnName = '$value'"
+            if (index != columnNames.size - 1)
+                query += " AND "
+        }
+        return query
+    }
 }

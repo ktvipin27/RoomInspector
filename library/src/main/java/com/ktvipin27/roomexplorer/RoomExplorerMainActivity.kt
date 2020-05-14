@@ -3,6 +3,7 @@ package com.ktvipin27.roomexplorer
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.iterator
 import androidx.room.RoomDatabase
 import kotlinx.android.synthetic.main.activity_room_explorer_main.*
+import java.util.*
 
 /**
  * Created by Vipin KT on 08/05/20
@@ -115,35 +117,44 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
                 tv_record_count.text = getString(R.string.number_of_records, cursor.count)
                 val th = TableRow(this)
                 cursor.moveToFirst()
-                for (i in 0 until cursor.columnCount)
+                val columnNames = arrayListOf<String>()
+                for (i in 0 until cursor.columnCount) {
+                    val columnName = cursor.getColumnName(i)
+                    columnNames.add(columnName)
                     TextView(this)
                         .apply {
                             setPadding(10, 10, 10, 10)
-                            text = cursor.getColumnName(i)
+                            text = columnName
                             setTextColor(Color.BLACK)
                             typeface = Typeface.DEFAULT_BOLD
                         }.also {
                             th.addView(it)
                         }
+                }
                 tl.addView(th)
                 do {
                     val tr = TableRow(this).apply {
                         setPadding(0, 2, 0, 2)
                     }
-                    for (i in 0 until cursor.columnCount)
+                    val rowValues = arrayListOf<String>()
+                    for (i in 0 until cursor.columnCount) {
+                        val value = try {
+                            cursor.getString(i)
+                        } catch (e: Exception) {
+                            ""
+                        }
+                        rowValues.add(value)
                         TextView(this)
                             .apply {
                                 setPadding(10, 10, 10, 10)
-                                text = try {
-                                    cursor.getString(i)
-                                } catch (e: Exception) {
-                                    ""
-                                }
+                                text = value
                                 setTextColor(Color.BLACK)
                                 typeface = Typeface.DEFAULT
                             }.also {
                                 tr.addView(it)
                             }
+                    }
+                    tr.setOnClickListener { showUpdateDialog(columnNames, rowValues) }
                     tl.addView(tr)
                 } while (cursor.moveToNext())
                 cursor.close()
@@ -152,6 +163,98 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
                 getString(
                     R.string.error_operation_failed,
                     queryResult.exception.message
+                )
+            )
+        }
+    }
+
+    private fun showUpdateDialog(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
+        val ll = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val dialogPadding =
+                resources.getDimension(R.dimen.dialog_add_row_padding_vertical).toInt()
+            setPadding(dialogPadding, 0, dialogPadding, 0)
+        }
+        val topMargin =
+            resources.getDimension(R.dimen.dialog_add_row_item_margin_top).toInt()
+        val etPadding = resources.getDimension(R.dimen.dialog_add_row_item_padding).toInt()
+        val etList = mutableListOf<EditText>()
+
+        Pair(columnNames, rowValues).forEach { columnName, value ->
+            val tv = TextView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    weight = 1f
+                    gravity = Gravity.CENTER_VERTICAL
+                    setMargins(0, topMargin, 0, 0)
+                }
+                text = columnName
+                setTextColor(Color.BLACK)
+            }
+            val et = EditText(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    weight = 1f
+                    setMargins(0, topMargin, 0, 0)
+                }
+                setText(value)
+                setPadding(
+                    paddingStart + etPadding,
+                    paddingTop,
+                    paddingEnd + etPadding,
+                    paddingBottom
+                )
+                setTextColor(Color.BLACK)
+                background = getDrawable(R.drawable.bg_spinner)
+            }
+            etList.add(et)
+            val row = LinearLayout(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                orientation = LinearLayout.HORIZONTAL
+                addView(tv)
+                addView(et)
+            }
+            ll.addView(row)
+        }
+        val sv = ScrollView(this).apply { addView(ll) }
+        showAlert(
+            getString(R.string.action_update),
+            sv,
+            getString(android.R.string.ok)
+        ) {
+            updateTable(etList.map { it.text.toString() }, columnNames, rowValues)
+        }
+    }
+
+    private fun updateTable(
+        newValues: List<String>,
+        columnNames: List<String>,
+        oldValues: List<String>
+    ) {
+
+        when (val result = queryRunner.execute(
+            Queries.getUpdateQuery(
+                selectedTableName,
+                columnNames,
+                oldValues,
+                newValues
+            )
+        )) {
+            is QueryResult.Success -> {
+                toast(R.string.message_operation_success)
+                displayData()
+            }
+            is QueryResult.Error -> toast(
+                getString(
+                    R.string.error_operation_failed,
+                    result.exception.message
                 )
             )
         }

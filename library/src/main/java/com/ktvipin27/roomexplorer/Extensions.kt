@@ -71,3 +71,29 @@ fun AppCompatActivity.hideKeyboard() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
+
+fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(f: (A, B) -> Unit) {
+    val ia = first.iterator()
+    val ib = second.iterator()
+
+    while (ia.hasNext() && ib.hasNext()) {
+        val va = ia.next()
+        val vb = ib.next()
+
+        f(va, vb)
+    }
+}
+
+fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEachIndexed(f: (Int, A, B) -> Unit) {
+    val ia = first.iterator().withIndex()
+    val ib = second.iterator().withIndex()
+
+    while (ia.hasNext() && ib.hasNext()) {
+        val next = ia.next()
+        val index = next.index
+        val va = next.value
+        val vb = ib.next().value
+
+        f(index, va, vb)
+    }
+}
