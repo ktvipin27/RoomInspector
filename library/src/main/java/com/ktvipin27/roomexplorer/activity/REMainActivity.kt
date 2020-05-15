@@ -13,7 +13,6 @@ import androidx.room.RoomDatabase
 import com.ktvipin27.roomexplorer.R
 import com.ktvipin27.roomexplorer.RoomExplorer
 import com.ktvipin27.roomexplorer.query.QueryBuilder
-import com.ktvipin27.roomexplorer.query.QueryResult
 import com.ktvipin27.roomexplorer.query.QueryRunner
 import com.ktvipin27.roomexplorer.util.*
 import kotlinx.android.synthetic.main.activity_re_main.*
@@ -88,21 +87,13 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun getTableNames() {
         tableNamesAdapter.clear()
-        when (
-            val queryResult = QueryRunner.query(QueryBuilder.GET_TABLE_NAMES)) {
-            is QueryResult.Success -> {
-                queryResult.data.second.forEach {
-                    tableNamesAdapter.addAll(it)
-                }
+        QueryRunner.query(QueryBuilder.GET_TABLE_NAMES, {
+            it.second.forEach { list ->
+                tableNamesAdapter.addAll(list)
             }
-            is QueryResult.Error -> toast(
-                getString(
-                    R.string.re_error_operation_failed,
-                    queryResult.exception.message
-                )
-            )
-        }
-        tableNamesAdapter.notifyDataSetChanged()
+        }, {
+            toast(getString(R.string.re_error_operation_failed, it.message))
+        })
         if (!tableNamesAdapter.isEmpty)
             sp_table.setSelection(0)
         invalidateOptionsMenu()
@@ -110,24 +101,24 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun displayData() {
         hsv.removeAllViews()
-        when (val queryResult = QueryRunner.query(QueryBuilder getAllValues selectedTableName)) {
-            is QueryResult.Success -> {
-                val columns = queryResult.data.first
-                val rows = queryResult.data.second
-                tv_record_count.text = getString(R.string.re_label_number_of_records, rows.size)
+        QueryRunner.query(QueryBuilder getAllValues selectedTableName, { result ->
+            val columns = result.first
+            val rows = result.second
+            tv_record_count.text = getString(R.string.re_label_number_of_records, rows.size)
 
-                TableBuilder.build(columns, rows,
-                    { updateRow(columns, rows[it]) },
-                    { deleteRow(columns, rows[it]) })
-                    .also { hsv.addView(it) }
-            }
-            is QueryResult.Error -> toast(
+            TableBuilder.build(columns, rows,
+                { updateRow(columns, rows[it]) },
+                { deleteRow(columns, rows[it]) })
+                .also { hsv.addView(it) }
+        }, {
+            tv_record_count.text = ""
+            toast(
                 getString(
                     R.string.re_error_operation_failed,
-                    queryResult.exception.message
+                    it.message
                 )
             )
-        }
+        })
     }
 
     private fun deleteRow(columnNames: List<String>, rowValues: List<String>) {
@@ -141,18 +132,12 @@ internal class REMainActivity : AppCompatActivity() {
                 columnNames,
                 rowValues
             )
-            when (val result = QueryRunner.execute(query)) {
-                is QueryResult.Success -> {
-                    toast(R.string.re_message_operation_success)
-                    displayData()
-                }
-                is QueryResult.Error -> toast(
-                    getString(
-                        R.string.re_error_operation_failed,
-                        result.exception.message
-                    )
-                )
-            }
+            QueryRunner.execute(query, {
+                toast(R.string.re_message_operation_success)
+                displayData()
+            }, {
+                toast(getString(R.string.re_error_operation_failed, it.message))
+            })
         }
     }
 
@@ -223,107 +208,91 @@ internal class REMainActivity : AppCompatActivity() {
                 rowValues,
                 etList.map { it.text.toString() }
             )
-            when (val result = QueryRunner.execute(query)) {
-                is QueryResult.Success -> {
-                    toast(R.string.re_message_operation_success)
-                    displayData()
-                }
-                is QueryResult.Error -> toast(
-                    getString(
-                        R.string.re_error_operation_failed,
-                        result.exception.message
-                    )
-                )
-            }
+            QueryRunner.execute(query, {
+                toast(R.string.re_message_operation_success)
+                displayData()
+            }, {
+                toast(getString(R.string.re_error_operation_failed, it.message))
+            })
         }
     }
 
     private fun addRow() {
-        when (val queryResult =
-            QueryRunner.query(QueryBuilder getColumnNames selectedTableName)) {
-            is QueryResult.Success -> {
-                val ll = LinearLayout(this).apply {
-                    orientation = LinearLayout.VERTICAL
-                    val dialogPadding =
-                        resources.getDimension(R.dimen.re_padding_vertical_dialog_add_row).toInt()
-                    setPadding(dialogPadding, 0, dialogPadding, 0)
-                }
-                val topMargin =
-                    resources.getDimension(R.dimen.re_margin_top_dialog_add_row_item).toInt()
-                val etPadding =
-                    resources.getDimension(R.dimen.re_padding_dialog_add_row_item).toInt()
-                val etList = mutableListOf<EditText>()
-                val columns = queryResult.data.second.map { it[1] }
-                columns.forEach { columnName ->
-                    val tv = TextView(this).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            weight = 1f
-                            setMargins(0, topMargin, 0, 0)
-                        }
-                        text = columnName
-                        setTextColor(Color.BLACK)
-                    }
-                    val et = EditText(this).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            weight = 1f
-                            setMargins(0, topMargin, 0, 0)
-                        }
-                        setPadding(
-                            paddingStart + etPadding,
-                            paddingTop,
-                            paddingEnd + etPadding,
-                            paddingBottom
-                        )
-                        setTextColor(Color.BLACK)
-                        background = getDrawable(R.drawable.re_bg_rounded_corner)
-                    }
-                    etList.add(et)
-                    val row = LinearLayout(this).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        orientation = LinearLayout.HORIZONTAL
-                        addView(tv)
-                        addView(et)
-                    }
-                    ll.addView(row)
-                }
-                val sv = ScrollView(this).apply { addView(ll) }
-                showAlert(
-                    getString(R.string.re_title_add_row),
-                    sv,
-                    getString(R.string.re_action_add)
-                ) {
-                    val query =
-                        QueryBuilder.insert(selectedTableName, etList.map { it.text.toString() })
-                    when (val result = QueryRunner.execute(query)) {
-                        is QueryResult.Success -> {
-                            toast(R.string.re_message_operation_success)
-                            displayData()
-                        }
-                        is QueryResult.Error -> toast(
-                            getString(
-                                R.string.re_error_operation_failed,
-                                result.exception.message
-                            )
-                        )
-                    }
-                }
+        QueryRunner.query(QueryBuilder getColumnNames selectedTableName, { result ->
+            val ll = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                val dialogPadding =
+                    resources.getDimension(R.dimen.re_padding_vertical_dialog_add_row)
+                        .toInt()
+                setPadding(dialogPadding, 0, dialogPadding, 0)
             }
-            is QueryResult.Error -> toast(
-                getString(
-                    R.string.re_error_operation_failed,
-                    queryResult.exception.message
-                )
-            )
-        }
+            val topMargin =
+                resources.getDimension(R.dimen.re_margin_top_dialog_add_row_item).toInt()
+            val etPadding =
+                resources.getDimension(R.dimen.re_padding_dialog_add_row_item).toInt()
+            val etList = mutableListOf<EditText>()
+            val columns = result.second.map { it[1] }
+            columns.forEach { columnName ->
+                val tv = TextView(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        weight = 1f
+                        setMargins(0, topMargin, 0, 0)
+                    }
+                    text = columnName
+                    setTextColor(Color.BLACK)
+                }
+                val et = EditText(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        weight = 1f
+                        setMargins(0, topMargin, 0, 0)
+                    }
+                    setPadding(
+                        paddingStart + etPadding,
+                        paddingTop,
+                        paddingEnd + etPadding,
+                        paddingBottom
+                    )
+                    setTextColor(Color.BLACK)
+                    background = getDrawable(R.drawable.re_bg_rounded_corner)
+                }
+                etList.add(et)
+                val row = LinearLayout(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    orientation = LinearLayout.HORIZONTAL
+                    addView(tv)
+                    addView(et)
+                }
+                ll.addView(row)
+            }
+            val sv = ScrollView(this).apply { addView(ll) }
+            showAlert(
+                getString(R.string.re_title_add_row),
+                sv,
+                getString(R.string.re_action_add)
+            ) {
+                val query =
+                    QueryBuilder.insert(
+                        selectedTableName,
+                        etList.map { it.text.toString() })
+                QueryRunner.execute(query, {
+                    toast(R.string.re_message_operation_success)
+                    displayData()
+                }, {
+                    toast(getString(R.string.re_error_operation_failed, it.message))
+                })
+            }
+        }, {
+            toast(getString(R.string.re_error_operation_failed, it.message))
+        })
     }
 
     private fun deleteTable() {
@@ -332,19 +301,12 @@ internal class REMainActivity : AppCompatActivity() {
             getString(R.string.re_message_delete_table, selectedTableName),
             getString(R.string.re_action_delete)
         ) {
-            when (val queryResult =
-                QueryRunner.execute(QueryBuilder deleteTable selectedTableName)) {
-                is QueryResult.Success -> {
-                    toast(R.string.re_message_operation_success)
-                    displayData()
-                }
-                is QueryResult.Error -> toast(
-                    getString(
-                        R.string.re_error_operation_failed,
-                        queryResult.exception.message
-                    )
-                )
-            }
+            QueryRunner.execute(QueryBuilder deleteTable selectedTableName, {
+                toast(R.string.re_message_operation_success)
+                displayData()
+            }, {
+                toast(getString(R.string.re_error_operation_failed, it.message))
+            })
         }
     }
 
@@ -354,21 +316,15 @@ internal class REMainActivity : AppCompatActivity() {
             getString(R.string.re_message_drop_table, selectedTableName),
             getString(R.string.re_action_drop)
         ) {
-            when (val queryResult = QueryRunner.execute(QueryBuilder dropTable selectedTableName)) {
-                is QueryResult.Success -> {
-                    toast(R.string.re_message_operation_success)
-                    if (tableNamesAdapter.count < 2)
-                        refreshActivity()
-                    else
-                        getTableNames()
-                }
-                is QueryResult.Error -> toast(
-                    getString(
-                        R.string.re_error_operation_failed,
-                        queryResult.exception.message
-                    )
-                )
-            }
+            QueryRunner.execute(QueryBuilder dropTable selectedTableName, {
+                toast(R.string.re_message_operation_success)
+                if (tableNamesAdapter.count < 2)
+                    refreshActivity()
+                else
+                    getTableNames()
+            }, {
+                toast(getString(R.string.re_error_operation_failed, it.message))
+            })
         }
     }
 }

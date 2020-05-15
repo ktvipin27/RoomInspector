@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.ktvipin27.roomexplorer.util.RowsAndColumns
 
 /**
  * Created by Vipin KT on 14/05/20
@@ -24,35 +25,48 @@ internal object QueryRunner {
     }
 
     internal fun query(
-        query: String
-    ): QueryResult<RowsAndColumns> = try {
+        query: String,
+        onSuccess: (RowsAndColumns) -> Unit,
+        onError: (e: Exception) -> Unit
+    ) = try {
         val c = supportSQLiteDatabase().query(query, null)
         if (null == c)
-            QueryResult.Error(java.lang.Exception())
+            onError(java.lang.Exception())
         else {
-            c.moveToFirst()
             val columnNames = arrayListOf<String>()
             for (i in 0 until c.columnCount) columnNames.add(c.getColumnName(i))
             val rows = mutableListOf<ArrayList<String>>()
+            c.moveToFirst()
             do {
                 val rowValues = arrayListOf<String>()
-                for (i in 0 until c.columnCount) rowValues.add(c.getString(i))
+                for (i in 0 until c.columnCount)
+                    try {
+                        val value = c.getString(i)
+                        rowValues.add(value)
+                    } catch (e: Exception) {
+                    }
                 rows.add(rowValues)
             } while (c.moveToNext())
             c.close()
-            QueryResult.Success(RowsAndColumns(columnNames, rows))
+            onSuccess(
+                RowsAndColumns(
+                    columnNames,
+                    rows
+                )
+            )
         }
     } catch (ex: Exception) {
-        ex.printStackTrace()
-        QueryResult.Error(ex)
+        onError(ex).also { ex.printStackTrace() }
     }
 
-    internal fun execute(query: String): QueryResult<Any> = try {
-        supportSQLiteDatabase().execSQL(query)
-        QueryResult.Success("")
+    internal fun execute(
+        query: String,
+        onSuccess: () -> Unit,
+        onError: (e: Exception) -> Unit
+    ) = try {
+        supportSQLiteDatabase().execSQL(query).also { onSuccess() }
     } catch (ex: Exception) {
-        ex.printStackTrace()
-        QueryResult.Error(ex)
+        onError(ex).also { ex.printStackTrace() }
     }
 
     private fun supportSQLiteDatabase(): SupportSQLiteDatabase {
