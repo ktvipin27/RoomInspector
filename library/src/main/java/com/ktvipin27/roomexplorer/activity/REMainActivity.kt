@@ -1,7 +1,6 @@
 package com.ktvipin27.roomexplorer.activity
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
@@ -16,12 +15,8 @@ import com.ktvipin27.roomexplorer.RoomExplorer
 import com.ktvipin27.roomexplorer.query.QueryBuilder
 import com.ktvipin27.roomexplorer.query.QueryResult
 import com.ktvipin27.roomexplorer.query.QueryRunner
-import com.ktvipin27.roomexplorer.util.forEach
-import com.ktvipin27.roomexplorer.util.refreshActivity
-import com.ktvipin27.roomexplorer.util.showAlert
-import com.ktvipin27.roomexplorer.util.toast
+import com.ktvipin27.roomexplorer.util.*
 import kotlinx.android.synthetic.main.activity_re_main.*
-import java.util.*
 
 /**
  * Created by Vipin KT on 08/05/20
@@ -57,7 +52,7 @@ internal class REMainActivity : AppCompatActivity() {
         sp_table.onItemSelectedListener = tableNameSelectedListener
 
         parseIntent()
-
+        TableBuilder.init(this)
         getTableNames()
     }
 
@@ -116,58 +111,26 @@ internal class REMainActivity : AppCompatActivity() {
     }
 
     private fun displayData() {
-        tl.removeAllViews()
+        hsv.removeAllViews()
         when (val queryResult = QueryRunner.getData(QueryBuilder getAllValues selectedTableName)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 tv_record_count.text = getString(R.string.re_label_number_of_records, cursor.count)
-                val th = TableRow(this)
                 cursor.moveToFirst()
                 val columnNames = arrayListOf<String>()
-                for (i in 0 until cursor.columnCount) {
-                    val columnName = cursor.getColumnName(i)
-                    columnNames.add(columnName)
-                    TextView(this)
-                        .apply {
-                            setPadding(10, 10, 10, 10)
-                            text = columnName
-                            setTextColor(Color.BLACK)
-                            typeface = Typeface.DEFAULT_BOLD
-                        }.also {
-                            th.addView(it)
-                        }
-                }
-                tl.addView(th)
+                for (i in 0 until cursor.columnCount) columnNames.add(cursor.getColumnName(i))
+                val rows = mutableListOf<ArrayList<String>>()
                 do {
-                    val tr = TableRow(this).apply {
-                        setPadding(0, 2, 0, 2)
-                    }
                     val rowValues = arrayListOf<String>()
-                    for (i in 0 until cursor.columnCount) {
-                        val value = try {
-                            cursor.getString(i)
-                        } catch (e: Exception) {
-                            ""
-                        }
-                        rowValues.add(value)
-                        TextView(this)
-                            .apply {
-                                setPadding(10, 10, 10, 10)
-                                text = value
-                                setTextColor(Color.BLACK)
-                                typeface = Typeface.DEFAULT
-                            }.also {
-                                tr.addView(it)
-                            }
-                    }
-                    tr.setOnClickListener { updateRow(columnNames, rowValues) }
-                    tr.setOnLongClickListener {
-                        deleteRow(columnNames, rowValues)
-                        true
-                    }
-                    tl.addView(tr)
+                    for (i in 0 until cursor.columnCount) rowValues.add(cursor.getString(i))
+                    rows.add(rowValues)
                 } while (cursor.moveToNext())
                 cursor.close()
+
+                TableBuilder.build(columnNames, rows,
+                    { updateRow(columnNames, rows[it]) },
+                    { deleteRow(columnNames, rows[it]) })
+                    .also { hsv.addView(it) }
             }
             is QueryResult.Error -> toast(
                 getString(
