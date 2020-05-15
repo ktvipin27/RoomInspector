@@ -3,9 +3,12 @@ package com.ktvipin27.roomexplorer.util
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.view.Gravity
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.ktvipin27.roomexplorer.R
 
 /**
  * Created by Vipin KT on 15/05/20
@@ -13,6 +16,15 @@ import android.widget.TextView
 internal object TableBuilder {
 
     lateinit var context: Context
+    private val tableRowMinHeight by lazy {
+        context.resources.getDimension(R.dimen.re_min_height_table_row).toInt()
+    }
+    private val tableRowBackground by lazy {
+        ContextCompat.getColor(
+            context,
+            R.color.re_color_table_row
+        )
+    }
 
     fun init(context: Context) {
         this.context = context
@@ -20,6 +32,8 @@ internal object TableBuilder {
 
     private fun tableHeader(text: String) = TextView(context)
         .apply {
+            minHeight = tableRowMinHeight
+            gravity = Gravity.CENTER_VERTICAL
             setPadding(10, 10, 10, 10)
             this.text = text
             setTextColor(Color.BLACK)
@@ -28,6 +42,8 @@ internal object TableBuilder {
 
     private fun tableTuple(text: String) = TextView(context)
         .apply {
+            minHeight = tableRowMinHeight
+            gravity = Gravity.CENTER_VERTICAL
             setPadding(10, 10, 10, 10)
             this.text = text
             setTextColor(Color.BLACK)
@@ -60,6 +76,8 @@ internal object TableBuilder {
                         onLongClickAction(index)
                         true
                     }
+                    if (index % 2 != 0)
+                        setBackgroundColor(tableRowBackground)
                 }
                 addView(tableRow)
             }

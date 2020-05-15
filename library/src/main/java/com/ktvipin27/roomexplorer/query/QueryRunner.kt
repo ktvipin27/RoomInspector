@@ -45,7 +45,8 @@ internal object QueryRunner {
                         rowValues.add(value)
                     } catch (e: Exception) {
                     }
-                rows.add(rowValues)
+                if (rowValues.isNotEmpty())
+                    rows.add(rowValues)
             } while (c.moveToNext())
             c.close()
             onSuccess(

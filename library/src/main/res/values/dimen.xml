@@ -4,4 +4,5 @@
     <dimen name="re_padding_vertical_dialog_add_row">16dp</dimen>
     <dimen name="re_margin_top_dialog_add_row_item">8dp</dimen>
     <dimen name="re_padding_dialog_add_row_item">8dp</dimen>
+    <dimen name="re_min_height_table_row">40dp</dimen>
 </resources>
