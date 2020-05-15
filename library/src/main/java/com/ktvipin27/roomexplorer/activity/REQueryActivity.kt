@@ -33,22 +33,12 @@ internal class REQueryActivity : AppCompatActivity() {
     }
 
     private fun executeQuery(query: String) {
-        when (val queryResult = QueryRunner.getData(query)) {
+        when (val queryResult = QueryRunner.query(query)) {
             is QueryResult.Success -> {
                 toast(R.string.re_message_operation_success)
-                val cursor = queryResult.data
-                cursor.moveToFirst()
-                val columnNames = arrayListOf<String>()
-                for (i in 0 until cursor.columnCount) columnNames.add(cursor.getColumnName(i))
-                val rows = mutableListOf<ArrayList<String>>()
-                do {
-                    val rowValues = arrayListOf<String>()
-                    for (i in 0 until cursor.columnCount) rowValues.add(cursor.getString(i))
-                    rows.add(rowValues)
-                } while (cursor.moveToNext())
-                cursor.close()
-
-                TableBuilder.build(columnNames, rows, { }, { }).also { hsv.addView(it) }
+                TableBuilder
+                    .build(queryResult.data.first, queryResult.data.second, { }, { })
+                    .also { hsv.addView(it) }
             }
             is QueryResult.Error -> toast(
                 getString(

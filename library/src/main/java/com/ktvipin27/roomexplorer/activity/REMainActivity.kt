@@ -89,13 +89,11 @@ internal class REMainActivity : AppCompatActivity() {
     private fun getTableNames() {
         tableNamesAdapter.clear()
         when (
-            val queryResult = QueryRunner.getData(QueryBuilder.GET_TABLE_NAMES)) {
+            val queryResult = QueryRunner.query(QueryBuilder.GET_TABLE_NAMES)) {
             is QueryResult.Success -> {
-                val cursor = queryResult.data
-                cursor.moveToFirst()
-                do tableNamesAdapter.add(cursor.getString(0))
-                while (cursor.moveToNext())
-                cursor.close()
+                queryResult.data.second.forEach {
+                    tableNamesAdapter.addAll(it)
+                }
             }
             is QueryResult.Error -> toast(
                 getString(
@@ -112,24 +110,15 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun displayData() {
         hsv.removeAllViews()
-        when (val queryResult = QueryRunner.getData(QueryBuilder getAllValues selectedTableName)) {
+        when (val queryResult = QueryRunner.query(QueryBuilder getAllValues selectedTableName)) {
             is QueryResult.Success -> {
-                val cursor = queryResult.data
-                tv_record_count.text = getString(R.string.re_label_number_of_records, cursor.count)
-                cursor.moveToFirst()
-                val columnNames = arrayListOf<String>()
-                for (i in 0 until cursor.columnCount) columnNames.add(cursor.getColumnName(i))
-                val rows = mutableListOf<ArrayList<String>>()
-                do {
-                    val rowValues = arrayListOf<String>()
-                    for (i in 0 until cursor.columnCount) rowValues.add(cursor.getString(i))
-                    rows.add(rowValues)
-                } while (cursor.moveToNext())
-                cursor.close()
+                val columns = queryResult.data.first
+                val rows = queryResult.data.second
+                tv_record_count.text = getString(R.string.re_label_number_of_records, rows.size)
 
-                TableBuilder.build(columnNames, rows,
-                    { updateRow(columnNames, rows[it]) },
-                    { deleteRow(columnNames, rows[it]) })
+                TableBuilder.build(columns, rows,
+                    { updateRow(columns, rows[it]) },
+                    { deleteRow(columns, rows[it]) })
                     .also { hsv.addView(it) }
             }
             is QueryResult.Error -> toast(
@@ -141,7 +130,7 @@ internal class REMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteRow(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
+    private fun deleteRow(columnNames: List<String>, rowValues: List<String>) {
         showAlert(
             getString(R.string.re_title_delete_row),
             getString(R.string.re_message_delete_row, selectedTableName),
@@ -167,7 +156,7 @@ internal class REMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateRow(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
+    private fun updateRow(columnNames: List<String>, rowValues: List<String>) {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val dialogPadding =
@@ -251,7 +240,7 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun addRow() {
         when (val queryResult =
-            QueryRunner.getData(QueryBuilder getColumnNames selectedTableName)) {
+            QueryRunner.query(QueryBuilder getColumnNames selectedTableName)) {
             is QueryResult.Success -> {
                 val ll = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
@@ -264,10 +253,8 @@ internal class REMainActivity : AppCompatActivity() {
                 val etPadding =
                     resources.getDimension(R.dimen.re_padding_dialog_add_row_item).toInt()
                 val etList = mutableListOf<EditText>()
-                val cursor = queryResult.data
-                cursor.moveToFirst()
-                do {
-                    val columnName = cursor.getString(1)
+                val columns = queryResult.data.second.map { it[1] }
+                columns.forEach { columnName ->
                     val tv = TextView(this).apply {
                         layoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -307,8 +294,7 @@ internal class REMainActivity : AppCompatActivity() {
                         addView(et)
                     }
                     ll.addView(row)
-                } while (cursor.moveToNext())
-                cursor.close()
+                }
                 val sv = ScrollView(this).apply { addView(ll) }
                 showAlert(
                     getString(R.string.re_title_add_row),

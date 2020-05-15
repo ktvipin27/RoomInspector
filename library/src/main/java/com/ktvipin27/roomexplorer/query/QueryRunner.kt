@@ -1,7 +1,6 @@
 package com.ktvipin27.roomexplorer.query
 
 import android.content.Context
-import android.database.Cursor
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -24,9 +23,25 @@ internal object QueryRunner {
         this.databaseName = databaseName
     }
 
-    internal fun getData(query: String, bindArgs: Array<Any>? = null): QueryResult<Cursor> = try {
-        val c = supportSQLiteDatabase().query(query, bindArgs)
-        if (null != c) QueryResult.Success(c) else QueryResult.Error(java.lang.Exception())
+    internal fun query(
+        query: String
+    ): QueryResult<RowsAndColumns> = try {
+        val c = supportSQLiteDatabase().query(query, null)
+        if (null == c)
+            QueryResult.Error(java.lang.Exception())
+        else {
+            c.moveToFirst()
+            val columnNames = arrayListOf<String>()
+            for (i in 0 until c.columnCount) columnNames.add(c.getColumnName(i))
+            val rows = mutableListOf<ArrayList<String>>()
+            do {
+                val rowValues = arrayListOf<String>()
+                for (i in 0 until c.columnCount) rowValues.add(c.getString(i))
+                rows.add(rowValues)
+            } while (c.moveToNext())
+            c.close()
+            QueryResult.Success(RowsAndColumns(columnNames, rows))
+        }
     } catch (ex: Exception) {
         ex.printStackTrace()
         QueryResult.Error(ex)
