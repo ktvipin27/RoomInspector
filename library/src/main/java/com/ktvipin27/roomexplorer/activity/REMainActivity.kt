@@ -28,9 +28,6 @@ import java.util.*
  */
 internal class REMainActivity : AppCompatActivity() {
 
-    private lateinit var databaseClass: Class<out RoomDatabase>
-    private lateinit var databaseName: String
-    private lateinit var queryRunner: QueryRunner
     private val tableNamesAdapter: ArrayAdapter<String> by lazy {
         ArrayAdapter(
             this,
@@ -77,13 +74,7 @@ internal class REMainActivity : AppCompatActivity() {
         R.id.action_add -> true.also { addRow() }
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
-        R.id.action_custom -> true.also {
-            RoomExplorer.query(
-                this,
-                databaseClass,
-                databaseName
-            )
-        }
+        R.id.action_custom -> true.also { RoomExplorer.query(this) }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -94,20 +85,16 @@ internal class REMainActivity : AppCompatActivity() {
         if (!it.containsKey(RoomExplorer.KEY_DATABASE_NAME))
             toast(R.string.re_error_no_db_name).also { finish() }
 
-        databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
-        databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
+        val databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
+        val databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
 
-        queryRunner = QueryRunner(
-            this,
-            databaseClass,
-            databaseName
-        )
+        QueryRunner.init(applicationContext, databaseClass, databaseName)
     } ?: toast(R.string.re_error_no_data_passed).also { finish() }
 
     private fun getTableNames() {
         tableNamesAdapter.clear()
         when (
-            val queryResult = queryRunner.getData(QueryBuilder.GET_TABLE_NAMES)) {
+            val queryResult = QueryRunner.getData(QueryBuilder.GET_TABLE_NAMES)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 cursor.moveToFirst()
@@ -130,7 +117,7 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun displayData() {
         tl.removeAllViews()
-        when (val queryResult = queryRunner.getData(QueryBuilder getAllValues selectedTableName)) {
+        when (val queryResult = QueryRunner.getData(QueryBuilder getAllValues selectedTableName)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 tv_record_count.text = getString(R.string.re_label_number_of_records, cursor.count)
@@ -202,7 +189,7 @@ internal class REMainActivity : AppCompatActivity() {
                 columnNames,
                 rowValues
             )
-            when (val result = queryRunner.execute(query)) {
+            when (val result = QueryRunner.execute(query)) {
                 is QueryResult.Success -> {
                     toast(R.string.re_message_operation_success)
                     displayData()
@@ -293,7 +280,7 @@ internal class REMainActivity : AppCompatActivity() {
             oldValues,
             newValues
         )
-        when (val result = queryRunner.execute(query)) {
+        when (val result = QueryRunner.execute(query)) {
             is QueryResult.Success -> {
                 toast(R.string.re_message_operation_success)
                 displayData()
@@ -309,7 +296,7 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun addRow() {
         when (val queryResult =
-            queryRunner.getData(QueryBuilder getColumnNames selectedTableName)) {
+            QueryRunner.getData(QueryBuilder getColumnNames selectedTableName)) {
             is QueryResult.Success -> {
                 val ll = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
@@ -375,7 +362,7 @@ internal class REMainActivity : AppCompatActivity() {
                 ) {
                     val query =
                         QueryBuilder.insert(selectedTableName, etList.map { it.text.toString() })
-                    when (val result = queryRunner.execute(query)) {
+                    when (val result = QueryRunner.execute(query)) {
                         is QueryResult.Success -> {
                             toast(R.string.re_message_operation_success)
                             displayData()
@@ -405,7 +392,7 @@ internal class REMainActivity : AppCompatActivity() {
             getString(R.string.re_action_delete)
         ) {
             when (val queryResult =
-                queryRunner.execute(QueryBuilder deleteTable selectedTableName)) {
+                QueryRunner.execute(QueryBuilder deleteTable selectedTableName)) {
                 is QueryResult.Success -> {
                     toast(R.string.re_message_operation_success)
                     displayData()
@@ -426,7 +413,7 @@ internal class REMainActivity : AppCompatActivity() {
             getString(R.string.re_message_drop_table, selectedTableName),
             getString(R.string.re_action_drop)
         ) {
-            when (val queryResult = queryRunner.execute(QueryBuilder dropTable selectedTableName)) {
+            when (val queryResult = QueryRunner.execute(QueryBuilder dropTable selectedTableName)) {
                 is QueryResult.Success -> {
                     toast(R.string.re_message_operation_success)
                     if (tableNamesAdapter.count < 2)

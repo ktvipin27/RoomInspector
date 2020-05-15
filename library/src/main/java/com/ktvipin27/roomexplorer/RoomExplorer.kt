@@ -42,16 +42,7 @@ object RoomExplorer {
      * @param context RoomExplorerMainActivity
      */
     internal fun query(
-        context: REMainActivity,
-        dbClass: Class<out RoomDatabase>,
-        dbName: String
-    ) {
-        Intent(context, REQueryActivity::class.java)
-            .apply {
-                putExtras(
-                    bundleOf(KEY_DATABASE_CLASS to dbClass, KEY_DATABASE_NAME to dbName)
-                )
-            }
-            .also { context.startActivity(it) }
-    }
+        context: REMainActivity
+    ) = Intent(context, REQueryActivity::class.java)
+        .also { context.startActivity(it) }
 }

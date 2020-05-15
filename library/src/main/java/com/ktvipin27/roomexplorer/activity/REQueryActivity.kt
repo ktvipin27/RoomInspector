@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.room.RoomDatabase
 import com.ktvipin27.roomexplorer.R
-import com.ktvipin27.roomexplorer.RoomExplorer
-import com.ktvipin27.roomexplorer.RoomExplorer.KEY_DATABASE_CLASS
 import com.ktvipin27.roomexplorer.query.QueryResult
 import com.ktvipin27.roomexplorer.query.QueryRunner
 import com.ktvipin27.roomexplorer.util.hideKeyboard
@@ -21,8 +18,6 @@ import kotlinx.android.synthetic.main.activity_re_query.*
  */
 internal class REQueryActivity : AppCompatActivity() {
 
-    private lateinit var queryRunner: QueryRunner
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_re_query)
@@ -30,13 +25,6 @@ internal class REQueryActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        intent.extras?.let {
-            queryRunner = QueryRunner(
-                this,
-                it.get(KEY_DATABASE_CLASS) as Class<out RoomDatabase>,
-                it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
-            )
-        } ?: finish()
         btn_submit.setOnClickListener {
             tl.removeAllViews()
             val query = et_query.text.toString()
@@ -48,7 +36,7 @@ internal class REQueryActivity : AppCompatActivity() {
     }
 
     private fun executeQuery(query: String) {
-        when (val queryResult = queryRunner.getData(query)) {
+        when (val queryResult = QueryRunner.getData(query)) {
             is QueryResult.Success -> {
                 toast(R.string.re_message_operation_success)
                 val cursor = queryResult.data
