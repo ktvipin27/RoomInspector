@@ -19,6 +19,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
                 android:background="@drawable/re_bg_rounded_corner">
 
                 <Spinner

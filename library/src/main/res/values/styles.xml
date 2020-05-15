@@ -3,7 +3,9 @@
 
     <style name="RETheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#FFFFFF</item>
-        <item name="colorPrimaryDark">#FFFFFF</item>
+        <item name="colorPrimaryDark">#BCBCBC</item>
         <item name="colorAccent">#000000</item>
     </style>
+
+    <style name="RETheme.Child" parent="RETheme" />
 </resources>

@@ -5,11 +5,11 @@
     <application>
         <activity
             android:name=".activity.REMainActivity"
-            android:theme="@style/RETheme" />
+            android:theme="@style/RETheme.Child" />
         <activity
             android:name=".activity.REQueryActivity"
             android:label="@string/re_action_custom_query"
-            android:theme="@style/RETheme" />
+            android:theme="@style/RETheme.Child" />
     </application>
 
 </manifest>
