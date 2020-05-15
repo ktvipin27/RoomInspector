@@ -160,11 +160,11 @@ internal class REMainActivity : AppCompatActivity() {
                                 tr.addView(it)
                             }
                     }
-                    tr.setOnClickListener { showUpdateRowDialog(columnNames, rowValues) }
-                    tr.setOnLongClickListener(View.OnLongClickListener {
+                    tr.setOnClickListener { updateRow(columnNames, rowValues) }
+                    tr.setOnLongClickListener {
                         deleteRow(columnNames, rowValues)
                         true
-                    })
+                    }
                     tl.addView(tr)
                 } while (cursor.moveToNext())
                 cursor.close()
@@ -204,7 +204,7 @@ internal class REMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showUpdateRowDialog(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
+    private fun updateRow(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val dialogPadding =
@@ -265,32 +265,24 @@ internal class REMainActivity : AppCompatActivity() {
             sv,
             getString(R.string.re_action_update)
         ) {
-            updateTable(etList.map { it.text.toString() }, columnNames, rowValues)
-        }
-    }
-
-    private fun updateTable(
-        newValues: List<String>,
-        columnNames: List<String>,
-        oldValues: List<String>
-    ) {
-        val query = QueryBuilder.updateTable(
-            selectedTableName,
-            columnNames,
-            oldValues,
-            newValues
-        )
-        when (val result = QueryRunner.execute(query)) {
-            is QueryResult.Success -> {
-                toast(R.string.re_message_operation_success)
-                displayData()
-            }
-            is QueryResult.Error -> toast(
-                getString(
-                    R.string.re_error_operation_failed,
-                    result.exception.message
-                )
+            val query = QueryBuilder.updateTable(
+                selectedTableName,
+                columnNames,
+                rowValues,
+                etList.map { it.text.toString() }
             )
+            when (val result = QueryRunner.execute(query)) {
+                is QueryResult.Success -> {
+                    toast(R.string.re_message_operation_success)
+                    displayData()
+                }
+                is QueryResult.Error -> toast(
+                    getString(
+                        R.string.re_error_operation_failed,
+                        result.exception.message
+                    )
+                )
+            }
         }
     }
 
