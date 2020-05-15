@@ -173,7 +173,11 @@ internal class REMainActivity : AppCompatActivity() {
                                 tr.addView(it)
                             }
                     }
-                    tr.setOnClickListener { showUpdateDialog(columnNames, rowValues) }
+                    tr.setOnClickListener { showUpdateRowDialog(columnNames, rowValues) }
+                    tr.setOnLongClickListener(View.OnLongClickListener {
+                        deleteRow(columnNames, rowValues)
+                        true
+                    })
                     tl.addView(tr)
                 } while (cursor.moveToNext())
                 cursor.close()
@@ -187,7 +191,33 @@ internal class REMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showUpdateDialog(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
+    private fun deleteRow(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
+        showAlert(
+            getString(R.string.re_action_delete_row),
+            getString(R.string.re_message_delete_row, selectedTableName),
+            getString(android.R.string.ok)
+        ) {
+            val query = QueryBuilder.deleteRow(
+                selectedTableName,
+                columnNames,
+                rowValues
+            )
+            when (val result = queryRunner.execute(query)) {
+                is QueryResult.Success -> {
+                    toast(R.string.re_message_operation_success)
+                    displayData()
+                }
+                is QueryResult.Error -> toast(
+                    getString(
+                        R.string.re_error_operation_failed,
+                        result.exception.message
+                    )
+                )
+            }
+        }
+    }
+
+    private fun showUpdateRowDialog(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val dialogPadding =

@@ -2,11 +2,13 @@
     <string name="re_label_number_of_records">Number of Records %d</string>
     <string name="re_action_refresh">Refresh</string>
     <string name="re_action_add_row">Add Row</string>
+    <string name="re_action_delete_row">Delete Row</string>
     <string name="re_action_delete_table">Delete Table</string>
     <string name="re_action_drop_table">Drop Table</string>
     <string name="re_action_custom_query">Custom Query</string>
     <string name="re_action_update">Update</string>
     <string name="re_action_submit">Submit</string>
+    <string name="re_message_delete_row">Operation will clear this row from \"%s\"</string>
     <string name="re_message_delete_table">Operation will clear all the data in \"%s\"</string>
     <string name="re_message_drop_table">Operation will remove \"%s\" from database</string>
     <string name="re_message_operation_success">Operation completed successfully</string>

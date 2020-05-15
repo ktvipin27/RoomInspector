@@ -44,4 +44,18 @@ object QueryBuilder {
         }
         return query
     }
+
+    fun deleteRow(
+        tableName: String,
+        columnNames: List<String>,
+        values: List<String>
+    ): String {
+        var query = "DELETE FROM $tableName where "
+        Pair(columnNames, values).forEachIndexed { index, columnName, value ->
+            query += "$columnName = '$value'"
+            if (index != columnNames.size - 1)
+                query += " AND "
+        }
+        return query
+    }
 }
