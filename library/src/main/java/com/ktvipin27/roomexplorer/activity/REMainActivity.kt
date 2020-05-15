@@ -193,9 +193,9 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun deleteRow(columnNames: ArrayList<String>, rowValues: ArrayList<String>) {
         showAlert(
-            getString(R.string.re_action_delete_row),
+            getString(R.string.re_title_delete_row),
             getString(R.string.re_message_delete_row, selectedTableName),
-            getString(android.R.string.ok)
+            getString(R.string.re_action_delete)
         ) {
             val query = QueryBuilder.deleteRow(
                 selectedTableName,
@@ -274,9 +274,9 @@ internal class REMainActivity : AppCompatActivity() {
         }
         val sv = ScrollView(this).apply { addView(ll) }
         showAlert(
-            getString(R.string.re_action_update),
+            getString(R.string.re_title_update_row),
             sv,
-            getString(android.R.string.ok)
+            getString(R.string.re_action_update)
         ) {
             updateTable(etList.map { it.text.toString() }, columnNames, rowValues)
         }
@@ -369,9 +369,9 @@ internal class REMainActivity : AppCompatActivity() {
                 cursor.close()
                 val sv = ScrollView(this).apply { addView(ll) }
                 showAlert(
-                    getString(R.string.re_action_add_row),
+                    getString(R.string.re_title_add_row),
                     sv,
-                    getString(android.R.string.ok)
+                    getString(R.string.re_action_add)
                 ) {
                     val query =
                         QueryBuilder.insert(selectedTableName, etList.map { it.text.toString() })
@@ -400,9 +400,9 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun deleteTable() {
         showAlert(
-            getString(R.string.re_action_delete_table),
+            getString(R.string.re_title_delete_table),
             getString(R.string.re_message_delete_table, selectedTableName),
-            getString(android.R.string.ok)
+            getString(R.string.re_action_delete)
         ) {
             when (val queryResult =
                 queryRunner.execute(QueryBuilder deleteTable selectedTableName)) {
@@ -422,9 +422,9 @@ internal class REMainActivity : AppCompatActivity() {
 
     private fun dropTable() {
         showAlert(
-            getString(R.string.re_action_drop_table),
+            getString(R.string.re_title_drop_table),
             getString(R.string.re_message_drop_table, selectedTableName),
-            getString(android.R.string.ok)
+            getString(R.string.re_action_drop)
         ) {
             when (val queryResult = queryRunner.execute(QueryBuilder dropTable selectedTableName)) {
                 is QueryResult.Success -> {
