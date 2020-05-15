@@ -1,4 +1,4 @@
-package com.ktvipin27.roomexplorer
+package com.ktvipin27.roomexplorer.query
 
 import android.content.Context
 import android.content.ContextWrapper

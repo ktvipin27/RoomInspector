@@ -1,6 +1,5 @@
-package com.ktvipin27.roomexplorer
+package com.ktvipin27.roomexplorer.util
 
-import android.R
 import android.content.Context
 import android.view.Gravity
 import android.view.View
@@ -57,7 +56,7 @@ private fun AppCompatActivity.showDialog(
         dialog.dismiss()
     }
     builder.setNegativeButton(
-        getString(R.string.cancel)
+        getString(android.R.string.cancel)
     ) { dialog, which -> dialog.dismiss() }
     if (!isFinishing) {
         builder.create().show()

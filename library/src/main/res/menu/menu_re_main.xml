@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/action_refresh"
-        android:title="@string/action_add_refresh" />
+        android:title="@string/re_action_refresh" />
     <item
         android:id="@+id/action_add"
-        android:title="@string/action_add_row" />
+        android:title="@string/re_action_add_row" />
     <item
         android:id="@+id/action_delete"
-        android:title="@string/action_delete_table" />
+        android:title="@string/re_action_delete_table" />
     <item
         android:id="@+id/action_drop"
-        android:title="@string/action_drop_table" />
+        android:title="@string/re_action_drop_table" />
     <item
         android:id="@+id/action_custom"
-        android:title="@string/action_custom_query" />
+        android:title="@string/re_action_custom_query" />
 </menu>

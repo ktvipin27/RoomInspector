@@ -4,12 +4,12 @@
 
     <application>
         <activity
-            android:name=".RoomExplorerMainActivity"
-            android:theme="@style/RoomExplorerTheme" />
+            android:name=".activity.REMainActivity"
+            android:theme="@style/RETheme" />
         <activity
-            android:name=".RoomExplorerQueryActivity"
-            android:label="@string/action_custom_query"
-            android:theme="@style/RoomExplorerTheme" />
+            android:name=".activity.REQueryActivity"
+            android:label="@string/re_action_custom_query"
+            android:theme="@style/RETheme" />
     </application>
 
 </manifest>

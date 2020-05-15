@@ -1,26 +1,30 @@
-package com.ktvipin27.roomexplorer
+package com.ktvipin27.roomexplorer.query
+
+import com.ktvipin27.roomexplorer.util.forEachIndexed
 
 /**
  * Created by Vipin KT on 12/05/20
  */
-object Queries {
+object QueryBuilder {
     const val GET_TABLE_NAMES = "SELECT name _id FROM sqlite_master WHERE type ='table'"
-    infix fun GET_TABLE_DATA(tableName: String) = "SELECT * FROM $tableName"
-    infix fun DROP_TABLE(tableName: String) = "DROP TABLE $tableName"
-    infix fun DELETE_TABLE(tableName: String) = "DELETE FROM $tableName"
-    infix fun GET_COLUMN_NAMES(tableName: String) = "PRAGMA table_info($tableName)"
-    infix fun INSERT(tableNameAndValues: Pair<String, List<String>>): String {
-        var insertQuery = "INSERT INTO ${tableNameAndValues.first} VALUES("
-        tableNameAndValues.second.forEachIndexed { index, value ->
+
+    infix fun getAllValues(tableName: String) = "SELECT * FROM $tableName"
+    infix fun dropTable(tableName: String) = "DROP TABLE $tableName"
+    infix fun deleteTable(tableName: String) = "DELETE FROM $tableName"
+    infix fun getColumnNames(tableName: String) = "PRAGMA table_info($tableName)"
+
+    fun insert(tableName: String, values: List<String>): String {
+        var insertQuery = "INSERT INTO $tableName VALUES("
+        values.forEachIndexed { index, value ->
             insertQuery += "'$value'"
-            if (index != tableNameAndValues.second.size - 1)
+            if (index != values.size - 1)
                 insertQuery += ","
         }
         insertQuery += ")"
         return insertQuery
     }
 
-    fun getUpdateQuery(
+    fun updateTable(
         tableName: String,
         columnNames: List<String>,
         oldValues: List<String>,

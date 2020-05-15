@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.os.bundleOf
 import androidx.room.RoomDatabase
+import com.ktvipin27.roomexplorer.activity.REMainActivity
+import com.ktvipin27.roomexplorer.activity.REQueryActivity
 
 /**
  * Created by Vipin KT on 08/05/20
@@ -14,7 +16,7 @@ object RoomExplorer {
     internal const val KEY_DATABASE_NAME = "com.ktvipin27.roomexplorer.DATABASE_NAME"
 
     /**
-     * Launches [RoomExplorerMainActivity] from the context passed in the method.
+     * Launches [REMainActivity] from the context passed in the method.
      * @param context The context such as any activity or fragment or context reference
      * @param dbClass The database class registered in Room with @Database annotation and extended with RoomDatabase
      * @param dbName The name of your Room Database
@@ -24,7 +26,7 @@ object RoomExplorer {
         dbClass: Class<out RoomDatabase>,
         dbName: String
     ) {
-        Intent(context, RoomExplorerMainActivity::class.java)
+        Intent(context, REMainActivity::class.java)
             .apply {
                 putExtras(
                     bundleOf(KEY_DATABASE_CLASS to dbClass, KEY_DATABASE_NAME to dbName)
@@ -36,15 +38,15 @@ object RoomExplorer {
 
     /**
      * internal purpose
-     * Launches [RoomExplorerQueryActivity] from the context passed in the method.
+     * Launches [REQueryActivity] from the context passed in the method.
      * @param context RoomExplorerMainActivity
      */
     internal fun query(
-        context: RoomExplorerMainActivity,
+        context: REMainActivity,
         dbClass: Class<out RoomDatabase>,
         dbName: String
     ) {
-        Intent(context, RoomExplorerQueryActivity::class.java)
+        Intent(context, REQueryActivity::class.java)
             .apply {
                 putExtras(
                     bundleOf(KEY_DATABASE_CLASS to dbClass, KEY_DATABASE_NAME to dbName)

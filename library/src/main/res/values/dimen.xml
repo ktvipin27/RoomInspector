@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_size_table_header">8sp</dimen>
-    <dimen name="dialog_add_row_padding_vertical">16sp</dimen>
-    <dimen name="dialog_add_row_item_margin_top">8sp</dimen>
-    <dimen name="dialog_add_row_item_padding">8sp</dimen>
+    <dimen name="re_text_size_table_header">8sp</dimen>
+    <dimen name="re_padding_vertical_dialog_add_row">16dp</dimen>
+    <dimen name="re_margin_top_dialog_add_row_item">8dp</dimen>
+    <dimen name="re_padding_dialog_add_row_item">8dp</dimen>
 </resources>

@@ -1,4 +1,4 @@
-package com.ktvipin27.roomexplorer
+package com.ktvipin27.roomexplorer.query
 
 /**
  * Created by Vipin KT on 12/05/20

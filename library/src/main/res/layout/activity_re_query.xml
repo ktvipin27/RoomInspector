@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        tools:context=".RoomExplorerQueryActivity">
+        tools:context=".activity.REQueryActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -34,9 +34,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:background="@drawable/bg_spinner"
+                android:background="@drawable/re_bg_rounded_corner"
                 android:gravity="start"
-                android:hint="@string/hint_enter_query"
+                android:hint="@string/re_hint_enter_query"
                 android:minLines="3"
                 android:padding="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/action_submit"
+                android:hint="@string/re_action_submit"
                 android:padding="10dp"
                 android:textColor="@android:color/black"
                 app:layout_constraintEnd_toEndOf="parent"

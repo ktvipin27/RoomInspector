@@ -19,7 +19,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_spinner">
+                android:background="@drawable/re_bg_rounded_corner">
 
                 <Spinner
                     android:id="@+id/sp_table"
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        tools:context=".RoomExplorerMainActivity">
+        tools:context=".activity.REMainActivity">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

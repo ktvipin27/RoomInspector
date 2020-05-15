@@ -1,4 +1,4 @@
-package com.ktvipin27.roomexplorer
+package com.ktvipin27.roomexplorer.activity
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -11,13 +11,22 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.iterator
 import androidx.room.RoomDatabase
-import kotlinx.android.synthetic.main.activity_room_explorer_main.*
+import com.ktvipin27.roomexplorer.R
+import com.ktvipin27.roomexplorer.RoomExplorer
+import com.ktvipin27.roomexplorer.query.QueryBuilder
+import com.ktvipin27.roomexplorer.query.QueryResult
+import com.ktvipin27.roomexplorer.query.QueryRunner
+import com.ktvipin27.roomexplorer.util.forEach
+import com.ktvipin27.roomexplorer.util.refreshActivity
+import com.ktvipin27.roomexplorer.util.showAlert
+import com.ktvipin27.roomexplorer.util.toast
+import kotlinx.android.synthetic.main.activity_re_main.*
 import java.util.*
 
 /**
  * Created by Vipin KT on 08/05/20
  */
-internal class RoomExplorerMainActivity : AppCompatActivity() {
+internal class REMainActivity : AppCompatActivity() {
 
     private lateinit var databaseClass: Class<out RoomDatabase>
     private lateinit var databaseName: String
@@ -43,7 +52,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_room_explorer_main)
+        setContentView(R.layout.activity_re_main)
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
 
@@ -56,7 +65,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_explorer, menu)
+        menuInflater.inflate(R.menu.menu_re_main, menu)
         menu?.iterator()?.forEach {
             it.isVisible = !tableNamesAdapter.isEmpty
         }
@@ -68,27 +77,37 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
         R.id.action_add -> true.also { addRow() }
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
-        R.id.action_custom -> true.also { RoomExplorer.query(this, databaseClass, databaseName) }
+        R.id.action_custom -> true.also {
+            RoomExplorer.query(
+                this,
+                databaseClass,
+                databaseName
+            )
+        }
         else -> super.onOptionsItemSelected(item)
     }
 
     private fun parseIntent() = intent.extras?.let {
 
         if (!it.containsKey(RoomExplorer.KEY_DATABASE_CLASS))
-            toast(R.string.error_no_db_class).also { finish() }
+            toast(R.string.re_error_no_db_class).also { finish() }
         if (!it.containsKey(RoomExplorer.KEY_DATABASE_NAME))
-            toast(R.string.error_no_db_name).also { finish() }
+            toast(R.string.re_error_no_db_name).also { finish() }
 
         databaseClass = it.get(RoomExplorer.KEY_DATABASE_CLASS) as Class<out RoomDatabase>
         databaseName = it.getString(RoomExplorer.KEY_DATABASE_NAME, "")
 
-        queryRunner = QueryRunner(this, databaseClass, databaseName)
-    } ?: toast(R.string.error_no_data_passed).also { finish() }
+        queryRunner = QueryRunner(
+            this,
+            databaseClass,
+            databaseName
+        )
+    } ?: toast(R.string.re_error_no_data_passed).also { finish() }
 
     private fun getTableNames() {
         tableNamesAdapter.clear()
         when (
-            val queryResult = queryRunner.getData(Queries.GET_TABLE_NAMES)) {
+            val queryResult = queryRunner.getData(QueryBuilder.GET_TABLE_NAMES)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
                 cursor.moveToFirst()
@@ -98,7 +117,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
             }
             is QueryResult.Error -> toast(
                 getString(
-                    R.string.error_operation_failed,
+                    R.string.re_error_operation_failed,
                     queryResult.exception.message
                 )
             )
@@ -111,10 +130,10 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
 
     private fun displayData() {
         tl.removeAllViews()
-        when (val queryResult = queryRunner.getData(Queries GET_TABLE_DATA selectedTableName)) {
+        when (val queryResult = queryRunner.getData(QueryBuilder getAllValues selectedTableName)) {
             is QueryResult.Success -> {
                 val cursor = queryResult.data
-                tv_record_count.text = getString(R.string.number_of_records, cursor.count)
+                tv_record_count.text = getString(R.string.re_label_number_of_records, cursor.count)
                 val th = TableRow(this)
                 cursor.moveToFirst()
                 val columnNames = arrayListOf<String>()
@@ -161,7 +180,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
             }
             is QueryResult.Error -> toast(
                 getString(
-                    R.string.error_operation_failed,
+                    R.string.re_error_operation_failed,
                     queryResult.exception.message
                 )
             )
@@ -172,12 +191,12 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
         val ll = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val dialogPadding =
-                resources.getDimension(R.dimen.dialog_add_row_padding_vertical).toInt()
+                resources.getDimension(R.dimen.re_padding_vertical_dialog_add_row).toInt()
             setPadding(dialogPadding, 0, dialogPadding, 0)
         }
         val topMargin =
-            resources.getDimension(R.dimen.dialog_add_row_item_margin_top).toInt()
-        val etPadding = resources.getDimension(R.dimen.dialog_add_row_item_padding).toInt()
+            resources.getDimension(R.dimen.re_margin_top_dialog_add_row_item).toInt()
+        val etPadding = resources.getDimension(R.dimen.re_padding_dialog_add_row_item).toInt()
         val etList = mutableListOf<EditText>()
 
         Pair(columnNames, rowValues).forEach { columnName, value ->
@@ -209,7 +228,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
                     paddingBottom
                 )
                 setTextColor(Color.BLACK)
-                background = getDrawable(R.drawable.bg_spinner)
+                background = getDrawable(R.drawable.re_bg_rounded_corner)
             }
             etList.add(et)
             val row = LinearLayout(this).apply {
@@ -225,7 +244,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
         }
         val sv = ScrollView(this).apply { addView(ll) }
         showAlert(
-            getString(R.string.action_update),
+            getString(R.string.re_action_update),
             sv,
             getString(android.R.string.ok)
         ) {
@@ -238,22 +257,20 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
         columnNames: List<String>,
         oldValues: List<String>
     ) {
-
-        when (val result = queryRunner.execute(
-            Queries.getUpdateQuery(
-                selectedTableName,
-                columnNames,
-                oldValues,
-                newValues
-            )
-        )) {
+        val query = QueryBuilder.updateTable(
+            selectedTableName,
+            columnNames,
+            oldValues,
+            newValues
+        )
+        when (val result = queryRunner.execute(query)) {
             is QueryResult.Success -> {
-                toast(R.string.message_operation_success)
+                toast(R.string.re_message_operation_success)
                 displayData()
             }
             is QueryResult.Error -> toast(
                 getString(
-                    R.string.error_operation_failed,
+                    R.string.re_error_operation_failed,
                     result.exception.message
                 )
             )
@@ -261,17 +278,19 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
     }
 
     private fun addRow() {
-        when (val queryResult = queryRunner.getData(Queries GET_COLUMN_NAMES selectedTableName)) {
+        when (val queryResult =
+            queryRunner.getData(QueryBuilder getColumnNames selectedTableName)) {
             is QueryResult.Success -> {
                 val ll = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
                     val dialogPadding =
-                        resources.getDimension(R.dimen.dialog_add_row_padding_vertical).toInt()
+                        resources.getDimension(R.dimen.re_padding_vertical_dialog_add_row).toInt()
                     setPadding(dialogPadding, 0, dialogPadding, 0)
                 }
                 val topMargin =
-                    resources.getDimension(R.dimen.dialog_add_row_item_margin_top).toInt()
-                val etPadding = resources.getDimension(R.dimen.dialog_add_row_item_padding).toInt()
+                    resources.getDimension(R.dimen.re_margin_top_dialog_add_row_item).toInt()
+                val etPadding =
+                    resources.getDimension(R.dimen.re_padding_dialog_add_row_item).toInt()
                 val etList = mutableListOf<EditText>()
                 val cursor = queryResult.data
                 cursor.moveToFirst()
@@ -303,7 +322,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
                             paddingBottom
                         )
                         setTextColor(Color.BLACK)
-                        background = getDrawable(R.drawable.bg_spinner)
+                        background = getDrawable(R.drawable.re_bg_rounded_corner)
                     }
                     etList.add(et)
                     val row = LinearLayout(this).apply {
@@ -320,21 +339,20 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
                 cursor.close()
                 val sv = ScrollView(this).apply { addView(ll) }
                 showAlert(
-                    getString(R.string.action_add_row),
+                    getString(R.string.re_action_add_row),
                     sv,
                     getString(android.R.string.ok)
                 ) {
-                    val values = etList.map { it.text.toString() }
-
-                    when (val result =
-                        queryRunner.execute(Queries INSERT Pair(selectedTableName, values))) {
+                    val query =
+                        QueryBuilder.insert(selectedTableName, etList.map { it.text.toString() })
+                    when (val result = queryRunner.execute(query)) {
                         is QueryResult.Success -> {
-                            toast(R.string.message_operation_success)
+                            toast(R.string.re_message_operation_success)
                             displayData()
                         }
                         is QueryResult.Error -> toast(
                             getString(
-                                R.string.error_operation_failed,
+                                R.string.re_error_operation_failed,
                                 result.exception.message
                             )
                         )
@@ -343,7 +361,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
             }
             is QueryResult.Error -> toast(
                 getString(
-                    R.string.error_operation_failed,
+                    R.string.re_error_operation_failed,
                     queryResult.exception.message
                 )
             )
@@ -352,18 +370,19 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
 
     private fun deleteTable() {
         showAlert(
-            getString(R.string.action_delete_table),
-            getString(R.string.message_delete_table, selectedTableName),
+            getString(R.string.re_action_delete_table),
+            getString(R.string.re_message_delete_table, selectedTableName),
             getString(android.R.string.ok)
         ) {
-            when (val queryResult = queryRunner.execute(Queries DELETE_TABLE selectedTableName)) {
+            when (val queryResult =
+                queryRunner.execute(QueryBuilder deleteTable selectedTableName)) {
                 is QueryResult.Success -> {
-                    toast(R.string.message_operation_success)
+                    toast(R.string.re_message_operation_success)
                     displayData()
                 }
                 is QueryResult.Error -> toast(
                     getString(
-                        R.string.error_operation_failed,
+                        R.string.re_error_operation_failed,
                         queryResult.exception.message
                     )
                 )
@@ -373,13 +392,13 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
 
     private fun dropTable() {
         showAlert(
-            getString(R.string.action_drop_table),
-            getString(R.string.message_drop_table, selectedTableName),
+            getString(R.string.re_action_drop_table),
+            getString(R.string.re_message_drop_table, selectedTableName),
             getString(android.R.string.ok)
         ) {
-            when (val queryResult = queryRunner.execute(Queries DROP_TABLE selectedTableName)) {
+            when (val queryResult = queryRunner.execute(QueryBuilder dropTable selectedTableName)) {
                 is QueryResult.Success -> {
-                    toast(R.string.message_operation_success)
+                    toast(R.string.re_message_operation_success)
                     if (tableNamesAdapter.count < 2)
                         refreshActivity()
                     else
@@ -387,7 +406,7 @@ internal class RoomExplorerMainActivity : AppCompatActivity() {
                 }
                 is QueryResult.Error -> toast(
                     getString(
-                        R.string.error_operation_failed,
+                        R.string.re_error_operation_failed,
                         queryResult.exception.message
                     )
                 )

@@ -1,4 +1,4 @@
-package com.ktvipin27.roomexplorer
+package com.ktvipin27.roomexplorer.activity
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -7,19 +7,25 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.RoomDatabase
+import com.ktvipin27.roomexplorer.R
+import com.ktvipin27.roomexplorer.RoomExplorer
 import com.ktvipin27.roomexplorer.RoomExplorer.KEY_DATABASE_CLASS
-import kotlinx.android.synthetic.main.activity_room_explorer_query.*
+import com.ktvipin27.roomexplorer.query.QueryResult
+import com.ktvipin27.roomexplorer.query.QueryRunner
+import com.ktvipin27.roomexplorer.util.hideKeyboard
+import com.ktvipin27.roomexplorer.util.toast
+import kotlinx.android.synthetic.main.activity_re_query.*
 
 /**
  * Created by Vipin KT on 14/05/20
  */
-internal class RoomExplorerQueryActivity : AppCompatActivity() {
+internal class REQueryActivity : AppCompatActivity() {
 
     private lateinit var queryRunner: QueryRunner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_room_explorer_query)
+        setContentView(R.layout.activity_re_query)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
@@ -44,7 +50,7 @@ internal class RoomExplorerQueryActivity : AppCompatActivity() {
     private fun executeQuery(query: String) {
         when (val queryResult = queryRunner.getData(query)) {
             is QueryResult.Success -> {
-                toast(R.string.message_operation_success)
+                toast(R.string.re_message_operation_success)
                 val cursor = queryResult.data
                 val th = TableRow(this)
                 cursor.moveToFirst()
@@ -83,7 +89,7 @@ internal class RoomExplorerQueryActivity : AppCompatActivity() {
             }
             is QueryResult.Error -> toast(
                 getString(
-                    R.string.error_operation_failed,
+                    R.string.re_error_operation_failed,
                     queryResult.exception.message
                 )
             )
