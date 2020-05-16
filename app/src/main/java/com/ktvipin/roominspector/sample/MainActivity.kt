@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin.roominspector.RoomInspector
 import com.ktvipin.roominspector.sample.db.AppDatabase
-import com.ktvipin.roominspector.sample.db.entity.Person
+import com.ktvipin.roominspector.sample.db.entity.User
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -20,14 +20,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        val genders = arrayOf("Male", "Female")
+        val phoneNumberRange = 9900000000..9999999999
+        val ageRange = 1..100
         button1.setOnClickListener {
+            val name = "User${Random().nextInt(100)}"
             db.personDAO().insert(
-                Person(
+                User(
                     0,
-                    "Person ${Random().nextInt()}",
-                    "Person ${Random().nextInt()}",
-                    Random().nextInt(100),
-                    "Address ${Random().nextInt()}"
+                    name,
+                    genders.random(),
+                    ageRange.random(),
+                    phoneNumberRange.random().toString(),
+                    "$name@gmail.com"
                 )
             )
         }

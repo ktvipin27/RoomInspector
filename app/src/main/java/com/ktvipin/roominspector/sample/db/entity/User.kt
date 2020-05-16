@@ -1,6 +1,5 @@
 package com.ktvipin.roominspector.sample.db.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -8,13 +7,12 @@ import androidx.room.PrimaryKey
  * Created by Vipin KT on 08/05/20
  */
 @Entity
-data class Person(
+data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    @ColumnInfo(name = "first_name")
-    val firstName: String,
-    @ColumnInfo(name = "last_name")
-    val lastName: String,
+    val name: String,
+    val gender: String,
     val age: Int,
-    val address: String
+    val phoneNumber: String,
+    val email: String
 )
