@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ktvipin27.roomexplorer">
+    package="com.ktvipin27.roominspector">
 
     <application>
         <activity
-            android:name=".activity.REMainActivity"
-            android:theme="@style/RETheme.Child" />
+            android:name="com.ktvipin27.roominspector.activity.RIMainActivity"
+            android:theme="@style/RITheme.Child" />
         <activity
-            android:name=".activity.REQueryActivity"
-            android:label="@string/re_action_custom_query"
-            android:theme="@style/RETheme.Child" />
+            android:name="com.ktvipin27.roominspector.activity.RIQueryActivity"
+            android:label="@string/ri_action_custom_query"
+            android:theme="@style/RITheme.Child" />
     </application>
 
 </manifest>

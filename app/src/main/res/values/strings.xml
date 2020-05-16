@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RoomExplorerSample</string>
+    <string name="app_name">RoomInspectorSample</string>
     <string name="action_insert">Insert</string>
     <string name="action_clear">Clear</string>
     <string name="action_explore">Explore</string>

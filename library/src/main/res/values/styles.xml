@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="RETheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="RITheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#FFFFFF</item>
         <item name="colorPrimaryDark">#BCBCBC</item>
         <item name="colorAccent">#000000</item>
     </style>
 
-    <style name="RETheme.Child" parent="RETheme" />
+    <style name="RITheme.Child" parent="RITheme" />
 </resources>
