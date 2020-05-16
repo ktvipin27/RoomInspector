@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ktvipin27.roominspector">
+    package="com.ktvipin.roominspector">
 
     <application>
         <activity
-            android:name="com.ktvipin27.roominspector.activity.RIMainActivity"
+            android:name="com.ktvipin.roominspector.activity.RIMainActivity"
             android:theme="@style/RITheme.Child" />
         <activity
-            android:name="com.ktvipin27.roominspector.activity.RIQueryActivity"
+            android:name="com.ktvipin.roominspector.activity.RIQueryActivity"
             android:label="@string/ri_action_custom_query"
             android:theme="@style/RITheme.Child" />
     </application>
