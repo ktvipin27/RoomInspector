@@ -175,7 +175,8 @@ internal class RIMainActivity : AppCompatActivity() {
     private fun addRow() {
         QueryRunner.query(QueryBuilder getColumnNames selectedTableName, { result ->
             val columns = result.second.map { it[1] }
-            val dialogView = DialogView(this, columns)
+            val rows = result.second.map { "" }
+            val dialogView = DialogView(this, columns, rows)
             showAlert(
                 getString(R.string.ri_title_add_row),
                 dialogView,

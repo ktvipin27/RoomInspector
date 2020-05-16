@@ -17,7 +17,7 @@ import com.ktvipin.roominspector.R
 class DialogView(
     context: Context,
     private val columnNames: List<String>,
-    private val values: List<String> = emptyList()
+    private val values: List<String>
 ) : ScrollView(context) {
     private val editTextTopMargin: Int by lazy {
         resources.getDimension(R.dimen.ri_margin_top_dialog_add_row_item).toInt()
