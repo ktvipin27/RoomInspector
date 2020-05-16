@@ -64,7 +64,6 @@ internal class RIMainActivity : AppCompatActivity() {
         sp_table.onItemSelectedListener = tableNameSelectedListener
 
         parseIntent()
-        TableBuilder.init(this)
         getTableNames()
     }
 
@@ -128,9 +127,10 @@ internal class RIMainActivity : AppCompatActivity() {
             val rows = result.second
             tv_record_count.text = getString(R.string.ri_label_number_of_records, rows.size)
 
-            TableBuilder.build(columns, rows,
-                { updateRow(columns, rows[it]) },
-                { deleteRow(columns, rows[it]) })
+            TableView(this)
+                .create(columns, rows,
+                    { updateRow(columns, rows[it]) },
+                    { deleteRow(columns, rows[it]) })
                 .also { hsv.addView(it) }
         }, {
             tv_record_count.text = ""

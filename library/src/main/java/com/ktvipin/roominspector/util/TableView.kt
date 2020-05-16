@@ -11,13 +11,12 @@ import androidx.core.content.ContextCompat
 import com.ktvipin.roominspector.R
 
 /**
- * A helper class for creating table by passing rows and columns.
+ * A custom [TableLayout] class having functionality for creating table by using given rows and columns.
  *
  * Created by Vipin KT on 15/05/20
  */
-internal object TableBuilder {
+internal class TableView(context: Context) : TableLayout(context) {
 
-    lateinit var context: Context
     private val tableRowMinHeight by lazy {
         context.resources.getDimension(R.dimen.ri_min_height_table_row).toInt()
     }
@@ -26,15 +25,6 @@ internal object TableBuilder {
             context,
             R.color.ri_color_table_row
         )
-    }
-
-    /**
-     * Initialization function for [TableBuilder].
-     *
-     * @param context Context from where [TableBuilder] is accessing.
-     */
-    fun init(context: Context) {
-        this.context = context
     }
 
     /**
@@ -96,25 +86,25 @@ internal object TableBuilder {
      * @param onLongClickAction function to get called on long clicking the row
      * @return [TableLayout] containing rows and columns filled with the provided values
      */
-    fun build(
+    fun create(
         columnNames: List<String>,
         rows: List<List<String>>,
         onClickAction: (pos: Int) -> Unit,
         onLongClickAction: (pos: Int) -> Unit
-    ) =
-        TableLayout(context).apply {
-            addView(tableRow(columnNames, true))
-            rows.forEachIndexed { index, list ->
-                val tableRow = tableRow(list, false).apply {
-                    setOnClickListener { onClickAction(index) }
-                    setOnLongClickListener {
-                        onLongClickAction(index)
-                        true
-                    }
-                    if (index % 2 != 0)
-                        setBackgroundColor(tableRowBackground)
+    ): TableView {
+        addView(tableRow(columnNames, true))
+        rows.forEachIndexed { index, list ->
+            val tableRow = tableRow(list, false).apply {
+                setOnClickListener { onClickAction(index) }
+                setOnLongClickListener {
+                    onLongClickAction(index)
+                    true
                 }
-                addView(tableRow)
+                if (index % 2 != 0)
+                    setBackgroundColor(tableRowBackground)
             }
+            addView(tableRow)
         }
+        return this
+    }
 }

@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin.roominspector.R
 import com.ktvipin.roominspector.query.QueryRunner
-import com.ktvipin.roominspector.util.TableBuilder
+import com.ktvipin.roominspector.util.TableView
 import com.ktvipin.roominspector.util.hideKeyboard
 import com.ktvipin.roominspector.util.toast
 import kotlinx.android.synthetic.main.activity_ri_query.*
@@ -40,8 +40,8 @@ internal class RIQueryActivity : AppCompatActivity() {
      */
     private fun executeQuery(query: String) = QueryRunner.query(query, { result ->
         toast(R.string.ri_message_operation_success)
-        TableBuilder
-            .build(result.first, result.second, { }, { })
+        TableView(this)
+            .create(result.first, result.second, { }, { })
             .also { hsv.addView(it) }
     }, {
         toast(getString(R.string.ri_error_operation_failed, it.message))
