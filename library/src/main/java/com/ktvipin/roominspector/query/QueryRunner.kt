@@ -12,12 +12,11 @@ import com.ktvipin.roominspector.util.RowsAndColumns
  * Created by Vipin KT on 14/05/20
  */
 internal object QueryRunner {
-    private lateinit var context: Context
-    private lateinit var databaseClass: Class<out RoomDatabase>
-    private lateinit var databaseName: String
+    private lateinit var database: SupportSQLiteDatabase
 
     /**
-     * initialization function for [QueryRunner]
+     * initialization function for [QueryRunner].
+     * Initializes [database] by using provided [databaseClass] and [databaseName].
      *
      * @param context [Context] of the accessing class
      * @param databaseClass a subclass of [RoomDatabase] registered in [Room] with @Database annotation
@@ -28,13 +27,12 @@ internal object QueryRunner {
         databaseClass: Class<out RoomDatabase>,
         databaseName: String
     ) {
-        this.context = context
-        this.databaseClass = databaseClass
-        this.databaseName = databaseName
+        val roomDatabase = Room.databaseBuilder(context, databaseClass, databaseName).build()
+        database = roomDatabase.openHelper.writableDatabase
     }
 
     /**
-     * Query the db with given [query] and returns result in [onSuccess] or error in [onError]
+     * Query the db with given [query] and returns result in [onSuccess] or error in [onError].
      *
      * @param query SQL query
      * @param onSuccess action to be executed if [query] returns result
@@ -45,7 +43,7 @@ internal object QueryRunner {
         onSuccess: (RowsAndColumns) -> Unit,
         onError: (e: Exception) -> Unit
     ) = try {
-        val c = supportSQLiteDatabase().query(query, null)
+        val c = database.query(query, null)
         if (null == c)
             onError(java.lang.Exception())
         else {
@@ -77,7 +75,7 @@ internal object QueryRunner {
     }
 
     /**
-     * Executes the given [query]
+     * Executes the given [query].
      *
      * @param query SQL query
      * @param onSuccess action to be executed if [query] executed successfully
@@ -88,18 +86,8 @@ internal object QueryRunner {
         onSuccess: () -> Unit,
         onError: (e: Exception) -> Unit
     ) = try {
-        supportSQLiteDatabase().execSQL(query).also { onSuccess() }
+        database.execSQL(query).also { onSuccess() }
     } catch (ex: Exception) {
         onError(ex).also { ex.printStackTrace() }
-    }
-
-    /**
-     * Returns a [SupportSQLiteDatabase] created by using provided [databaseClass] and [databaseName]
-     *
-     * @return [SupportSQLiteDatabase]
-     */
-    private fun supportSQLiteDatabase(): SupportSQLiteDatabase {
-        val roomDatabase = Room.databaseBuilder(context, databaseClass, databaseName).build()
-        return roomDatabase.openHelper.writableDatabase
     }
 }
