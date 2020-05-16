@@ -7,6 +7,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ktvipin.roominspector.util.RowsAndColumns
 
 /**
+ * A class which is responsible for performing db operations.
+ *
  * Created by Vipin KT on 14/05/20
  */
 internal object QueryRunner {
@@ -14,6 +16,13 @@ internal object QueryRunner {
     private lateinit var databaseClass: Class<out RoomDatabase>
     private lateinit var databaseName: String
 
+    /**
+     * initialization function for [QueryRunner]
+     *
+     * @param context [Context] of the accessing class
+     * @param databaseClass a subclass of [RoomDatabase] registered in [Room] with @Database annotation
+     * @param databaseName name of [RoomDatabase] class
+     */
     fun init(
         context: Context,
         databaseClass: Class<out RoomDatabase>,
@@ -24,6 +33,13 @@ internal object QueryRunner {
         this.databaseName = databaseName
     }
 
+    /**
+     * Query the db with given [query] and returns result in [onSuccess] or error in [onError]
+     *
+     * @param query SQL query
+     * @param onSuccess action to be executed if [query] returns result
+     * @param onError action to be executed if [query] execution failed
+     */
     internal fun query(
         query: String,
         onSuccess: (RowsAndColumns) -> Unit,
@@ -60,6 +76,13 @@ internal object QueryRunner {
         onError(ex).also { ex.printStackTrace() }
     }
 
+    /**
+     * Executes the given [query]
+     *
+     * @param query SQL query
+     * @param onSuccess action to be executed if [query] executed successfully
+     * @param onError action to be executed if [query] execution failed
+     */
     internal fun execute(
         query: String,
         onSuccess: () -> Unit,
@@ -70,6 +93,11 @@ internal object QueryRunner {
         onError(ex).also { ex.printStackTrace() }
     }
 
+    /**
+     * Returns a [SupportSQLiteDatabase] created by using provided [databaseClass] and [databaseName]
+     *
+     * @return [SupportSQLiteDatabase]
+     */
     private fun supportSQLiteDatabase(): SupportSQLiteDatabase {
         val roomDatabase = Room.databaseBuilder(context, databaseClass, databaseName).build()
         return roomDatabase.openHelper.writableDatabase

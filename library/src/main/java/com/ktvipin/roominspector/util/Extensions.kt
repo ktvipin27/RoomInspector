@@ -9,21 +9,50 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 /**
+ * Contains custom extension functions.
+ *
  * Created by Vipin KT on 12/05/20
+ */
+
+/**
+ * Restarts an activity with the same intent by finishing the current.
+ *
+ * @receiver [AppCompatActivity]
  */
 fun AppCompatActivity.refreshActivity() {
     finish()
     startActivity(intent)
 }
 
+/**
+ * Shows a toast message.
+ *
+ * @param messageId string ref id of the message to be displayed
+ * @receiver [Context]
+ */
 fun Context.toast(messageId: Int) = toast(getString(messageId))
 
+/**
+ * Shows a toast message.
+ *
+ * @param message message to be displayed
+ * @receiver [Context]
+ */
 fun Context.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
         setGravity(Gravity.CENTER, 0, 0)
     }.show()
 }
 
+/**
+ * Shows an alert dialog with given values.
+ *
+ * @param title title of the dialog
+ * @param message message to be displayed
+ * @param positiveButton positive action text
+ * @param onSubmit function to be called on clicking positive button
+ * @receiver [AppCompatActivity]
+ */
 fun AppCompatActivity.showAlert(
     title: String,
     message: String,
@@ -31,6 +60,15 @@ fun AppCompatActivity.showAlert(
     onSubmit: () -> Unit
 ) = showDialog(title, message, null, positiveButton, onSubmit)
 
+/**
+ * Shows an alert dialog with given values.
+ *
+ * @param title title of the dialog
+ * @param view custom view to be displayed
+ * @param positiveButton positive action text
+ * @param onSubmit function to be called on clicking positive button
+ * @receiver [AppCompatActivity]
+ */
 fun AppCompatActivity.showAlert(
     title: String,
     view: View,
@@ -38,6 +76,16 @@ fun AppCompatActivity.showAlert(
     onSubmit: () -> Unit
 ) = showDialog(title, null, view, positiveButton, onSubmit)
 
+/**
+ * Shows an alert dialog with given values.
+ *
+ * @param title title of the dialog
+ * @param message @Nullable message to be displayed
+ * @param view @Nullable custom view to be displayed
+ * @param positiveButton positive action text
+ * @param onSubmit function to be called on clicking positive button
+ * @receiver [AppCompatActivity]
+ */
 private fun AppCompatActivity.showDialog(
     title: String,
     message: String?,
@@ -63,6 +111,11 @@ private fun AppCompatActivity.showDialog(
     }
 }
 
+/**
+ * Hides the keyboard.
+ *
+ * @receiver [AppCompatActivity]
+ */
 fun AppCompatActivity.hideKeyboard() {
     val view = this.currentFocus
     if (view != null) {
@@ -71,7 +124,11 @@ fun AppCompatActivity.hideKeyboard() {
     }
 }
 
-fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(f: (A, B) -> Unit) {
+/**
+ * Loops multiple list at same time and performs the given [action] on each element of this [Iterator]s.
+ * @param [action] function that takes elements of lists itself and performs the desired action on the element.
+ */
+fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(action: (A, B) -> Unit) {
     val ia = first.iterator()
     val ib = second.iterator()
 
@@ -79,11 +136,17 @@ fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(f: (A, B) -> Unit) {
         val va = ia.next()
         val vb = ib.next()
 
-        f(va, vb)
+        action(va, vb)
     }
 }
 
-fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEachIndexed(f: (Int, A, B) -> Unit) {
+/**
+ * Loops multiple list at same time and performs the given [action] on each element,
+ * providing sequential index with the elements.
+ * @param [action] function that takes the index of an element and the elements of the lists itself
+ * and performs the desired action on the element.
+ */
+fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEachIndexed(action: (Int, A, B) -> Unit) {
     val ia = first.iterator().withIndex()
     val ib = second.iterator().withIndex()
 
@@ -93,6 +156,6 @@ fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEachIndexed(f: (Int, A, B) -> Unit)
         val va = next.value
         val vb = ib.next().value
 
-        f(index, va, vb)
+        action(index, va, vb)
     }
 }

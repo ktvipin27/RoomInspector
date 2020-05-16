@@ -3,23 +3,34 @@ package com.ktvipin.roominspector
 import android.content.Context
 import android.content.Intent
 import androidx.core.os.bundleOf
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ktvipin.roominspector.activity.RIMainActivity
 import com.ktvipin.roominspector.activity.RIQueryActivity
 
 /**
+ * An in-app database inspector for your [RoomDatabase].
+ *
  * Created by Vipin KT on 08/05/20
  */
 object RoomInspector {
 
+    /**
+     * Key for dbClass.
+     */
     internal const val KEY_DATABASE_CLASS = "com.ktvipin.roominspector.DATABASE_CLASS"
+
+    /**
+     * Key for dbName.
+     */
     internal const val KEY_DATABASE_NAME = "com.ktvipin.roominspector.DATABASE_NAME"
 
     /**
-     * Launches [RIMainActivity] from the context passed in the method.
-     * @param context The context such as any activity or fragment or context reference
-     * @param dbClass The database class registered in Room with @Database annotation and extended with RoomDatabase
-     * @param dbName The name of your Room Database
+     * Launches [RIMainActivity] from the [context].
+     *
+     * @param context The context such as any [android.app.Activity] or [android.app.Fragment].
+     * @param dbClass A subclass of [RoomDatabase] registered in [Room] with @Database annotation
+     * @param dbName The name of [dbClass]
      */
     fun inspect(
         context: Context,
@@ -33,16 +44,18 @@ object RoomInspector {
                 )
             }
             .also { context.startActivity(it) }
-
     }
 
     /**
-     * internal purpose
-     * Launches [RIQueryActivity] from the context passed in the method.
+     * Launches [RIQueryActivity] from [RIMainActivity].
+     * (for internal purpose)
+     *
      * @param context RIMainActivity context
      */
     internal fun query(
         context: RIMainActivity
-    ) = Intent(context, RIQueryActivity::class.java)
-        .also { context.startActivity(it) }
+    ) {
+        Intent(context, RIQueryActivity::class.java)
+            .also { context.startActivity(it) }
+    }
 }

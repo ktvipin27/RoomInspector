@@ -10,6 +10,8 @@ import com.ktvipin.roominspector.util.toast
 import kotlinx.android.synthetic.main.activity_ri_query.*
 
 /**
+ * [AppCompatActivity] for executing custom query.
+ *
  * Created by Vipin KT on 14/05/20
  */
 internal class RIQueryActivity : AppCompatActivity() {
@@ -31,14 +33,17 @@ internal class RIQueryActivity : AppCompatActivity() {
         }
     }
 
-    private fun executeQuery(query: String) {
-        QueryRunner.query(query, { result ->
-            toast(R.string.ri_message_operation_success)
-            TableBuilder
-                .build(result.first, result.second, { }, { })
-                .also { hsv.addView(it) }
-        }, {
-            toast(getString(R.string.ri_error_operation_failed, it.message))
-        })
-    }
+    /**
+     * Executes the given [query] and displays the result in a table.
+     *
+     * @param query SQL query
+     */
+    private fun executeQuery(query: String) = QueryRunner.query(query, { result ->
+        toast(R.string.ri_message_operation_success)
+        TableBuilder
+            .build(result.first, result.second, { }, { })
+            .also { hsv.addView(it) }
+    }, {
+        toast(getString(R.string.ri_error_operation_failed, it.message))
+    })
 }

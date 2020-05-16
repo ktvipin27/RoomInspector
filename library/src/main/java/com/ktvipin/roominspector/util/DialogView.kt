@@ -11,7 +11,13 @@ import androidx.core.content.ContextCompat
 import com.ktvipin.roominspector.R
 
 /**
+ * A custom view which contains multiple pairs if [TextView] and [EditText]
+ *
  * Created by Vipin KT on 15/05/20
+ *
+ * @param context Context
+ * @param columnNames list of strings which will be displayed in TextView's
+ * @param values list of strings which will be displayed in EditText's
  */
 @SuppressLint("ViewConstructor")
 class DialogView(
@@ -31,8 +37,15 @@ class DialogView(
     private val etBackground by lazy {
         ContextCompat.getDrawable(context, R.drawable.ri_bg_rounded_corner)
     }
+
+    /**
+     * Holds all [EditText]s in this view.
+     */
     private val etList = mutableListOf<EditText>()
 
+    /**
+     * The main layout of this view, where all pairs of views will be added.
+     */
     private val mainLayout: LinearLayout by lazy {
         LinearLayout(context).apply {
             layoutParams = LayoutParams(
@@ -44,14 +57,16 @@ class DialogView(
         }
     }
 
+    /**
+     * Returns a list, contains values of all [EditText]s in [etList].
+     */
     val fieldValues
         get() = etList.map { it.text.toString() }
 
+    /**
+     * Creates the class itself by looping the given columnNames and values.
+     */
     init {
-        setUp()
-    }
-
-    private fun setUp() {
         Pair(columnNames, values).forEach { columnName, value ->
             val tv = TextView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(

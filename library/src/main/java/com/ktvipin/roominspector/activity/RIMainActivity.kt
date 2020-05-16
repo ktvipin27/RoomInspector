@@ -17,10 +17,15 @@ import com.ktvipin.roominspector.util.*
 import kotlinx.android.synthetic.main.activity_ri_main.*
 
 /**
+ * The main activity of the  [RoomInspector].
+ *
  * Created by Vipin KT on 08/05/20
  */
 internal class RIMainActivity : AppCompatActivity() {
 
+    /**
+     * Adapter for table names.
+     */
     private val tableNamesAdapter: ArrayAdapter<String> by lazy {
         ArrayAdapter(
             this,
@@ -28,6 +33,11 @@ internal class RIMainActivity : AppCompatActivity() {
             arrayListOf<String>()
         ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
     }
+
+    /**
+     * An implementation of [AdapterView.OnItemSelectedListener],
+     * will be triggered when user selects the table name.
+     */
     private val tableNameSelectedListener = object : AdapterView.OnItemSelectedListener {
         override fun onNothingSelected(parent: AdapterView<*>?) {}
         override fun onItemSelected(
@@ -37,6 +47,10 @@ internal class RIMainActivity : AppCompatActivity() {
             id: Long
         ) = displayData()
     }
+
+    /**
+     * Name of the selected table.
+     */
     private val selectedTableName
         get() = sp_table.selectedItem as String
 
@@ -71,6 +85,10 @@ internal class RIMainActivity : AppCompatActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Parse the data passed in launch intent and
+     * initializes [QueryRunner] if all necessary data is present, else throws error.
+     */
     private fun parseIntent() = intent.extras?.let {
         if (!it.containsKey(RoomInspector.KEY_DATABASE_CLASS))
             toast(R.string.ri_error_no_db_class).also { finish() }
@@ -83,6 +101,9 @@ internal class RIMainActivity : AppCompatActivity() {
         QueryRunner.init(applicationContext, databaseClass, databaseName)
     } ?: toast(R.string.ri_error_no_data_passed).also { finish() }
 
+    /**
+     * Displays the table names in a spinner.
+     */
     private fun getTableNames() {
         tableNamesAdapter.clear()
         QueryRunner.query(QueryBuilder.GET_TABLE_NAMES, {
@@ -97,6 +118,9 @@ internal class RIMainActivity : AppCompatActivity() {
         invalidateOptionsMenu()
     }
 
+    /**
+     * Display's the data of the selected table in a table view.
+     */
     private fun displayData() {
         hsv.removeAllViews()
         QueryRunner.query(QueryBuilder getAllValues selectedTableName, { result ->
@@ -119,6 +143,9 @@ internal class RIMainActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Deletes the table on user confirmation.
+     */
     private fun deleteTable() {
         showAlert(
             getString(R.string.ri_title_delete_table),
@@ -134,6 +161,9 @@ internal class RIMainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Drops the table on user confirmation.
+     */
     private fun dropTable() {
         showAlert(
             getString(R.string.ri_title_drop_table),
@@ -152,6 +182,9 @@ internal class RIMainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Deletes the selected row of table on user confirmation.
+     */
     private fun deleteRow(columnNames: List<String>, rowValues: List<String>) {
         showAlert(
             getString(R.string.ri_title_delete_row),
@@ -172,6 +205,12 @@ internal class RIMainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Display's a dialog with fields to enter data
+     * and
+     * adds a row to the selected table with entered values.
+     *
+     */
     private fun addRow() {
         QueryRunner.query(QueryBuilder getColumnNames selectedTableName, { result ->
             val columns = result.second.map { it[1] }
@@ -195,6 +234,14 @@ internal class RIMainActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Display's a dialog with values of clicked row
+     * and
+     * updates the row with new/updated values.
+     *
+     * @param columnNames list of column names
+     * @param rowValues list of values of the clicked row
+     */
     private fun updateRow(columnNames: List<String>, rowValues: List<String>) {
         val dialogView = DialogView(this, columnNames, rowValues)
         showAlert(
