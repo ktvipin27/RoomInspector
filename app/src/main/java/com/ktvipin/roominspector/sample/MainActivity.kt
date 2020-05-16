@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         button3.setOnClickListener {
-            RoomInspector.explore(this, AppDatabase::class.java, AppDatabase.DB_NAME)
+            RoomInspector.inspect(this, AppDatabase::class.java, AppDatabase.DB_NAME)
         }
     }
 }

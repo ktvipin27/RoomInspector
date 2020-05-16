@@ -21,7 +21,7 @@ object RoomInspector {
      * @param dbClass The database class registered in Room with @Database annotation and extended with RoomDatabase
      * @param dbName The name of your Room Database
      */
-    fun explore(
+    fun inspect(
         context: Context,
         dbClass: Class<out RoomDatabase>,
         dbName: String
