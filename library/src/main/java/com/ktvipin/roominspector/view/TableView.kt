@@ -1,4 +1,4 @@
-package com.ktvipin.roominspector.util
+package com.ktvipin.roominspector.view
 
 import android.content.Context
 import android.graphics.Color
@@ -15,7 +15,7 @@ import com.ktvipin.roominspector.R
  *
  * Created by Vipin KT on 15/05/20
  */
-internal class TableView(context: Context) : TableLayout(context) {
+class TableView(context: Context) : TableLayout(context) {
 
     private val tableRowMinHeight by lazy {
         context.resources.getDimension(R.dimen.ri_min_height_table_row).toInt()

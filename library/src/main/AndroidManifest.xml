@@ -4,10 +4,10 @@
 
     <application>
         <activity
-            android:name="com.ktvipin.roominspector.activity.RIMainActivity"
+            android:name="com.ktvipin.roominspector.view.RIMainActivity"
             android:theme="@style/RITheme.Child" />
         <activity
-            android:name="com.ktvipin.roominspector.activity.RIQueryActivity"
+            android:name="com.ktvipin.roominspector.view.RIQueryActivity"
             android:label="@string/ri_action_custom_query"
             android:theme="@style/RITheme.Child" />
     </application>

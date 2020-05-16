@@ -1,4 +1,4 @@
-package com.ktvipin.roominspector.util
+package com.ktvipin.roominspector.view
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,6 +9,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.ktvipin.roominspector.R
+import com.ktvipin.roominspector.util.forEach
 
 /**
  * A custom view which contains multiple pairs if [TextView] and [EditText]

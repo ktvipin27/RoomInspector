@@ -5,8 +5,8 @@ import android.content.Intent
 import androidx.core.os.bundleOf
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.ktvipin.roominspector.activity.RIMainActivity
-import com.ktvipin.roominspector.activity.RIQueryActivity
+import com.ktvipin.roominspector.view.RIMainActivity
+import com.ktvipin.roominspector.view.RIQueryActivity
 
 /**
  * An in-app database inspector for your [RoomDatabase].

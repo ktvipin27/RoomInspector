@@ -1,10 +1,9 @@
-package com.ktvipin.roominspector.activity
+package com.ktvipin.roominspector.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin.roominspector.R
 import com.ktvipin.roominspector.query.QueryRunner
-import com.ktvipin.roominspector.util.TableView
 import com.ktvipin.roominspector.util.hideKeyboard
 import com.ktvipin.roominspector.util.toast
 import kotlinx.android.synthetic.main.activity_ri_query.*
@@ -14,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_ri_query.*
  *
  * Created by Vipin KT on 14/05/20
  */
-internal class RIQueryActivity : AppCompatActivity() {
+class RIQueryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

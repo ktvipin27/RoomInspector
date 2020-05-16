@@ -1,4 +1,4 @@
-package com.ktvipin.roominspector.activity
+package com.ktvipin.roominspector.view
 
 import android.os.Bundle
 import android.view.Menu
@@ -13,7 +13,9 @@ import com.ktvipin.roominspector.R
 import com.ktvipin.roominspector.RoomInspector
 import com.ktvipin.roominspector.query.QueryBuilder
 import com.ktvipin.roominspector.query.QueryRunner
-import com.ktvipin.roominspector.util.*
+import com.ktvipin.roominspector.util.refreshActivity
+import com.ktvipin.roominspector.util.showAlert
+import com.ktvipin.roominspector.util.toast
 import kotlinx.android.synthetic.main.activity_ri_main.*
 
 /**
@@ -21,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_ri_main.*
  *
  * Created by Vipin KT on 08/05/20
  */
-internal class RIMainActivity : AppCompatActivity() {
+class RIMainActivity : AppCompatActivity() {
 
     /**
      * Adapter for table names.
@@ -215,7 +217,8 @@ internal class RIMainActivity : AppCompatActivity() {
         QueryRunner.query(QueryBuilder getColumnNames selectedTableName, { result ->
             val columns = result.second.map { it[1] }
             val rows = result.second.map { "" }
-            val dialogView = DialogView(this).create(columns, rows)
+            val dialogView = DialogView(this)
+                .create(columns, rows)
             showAlert(
                 getString(R.string.ri_title_add_row),
                 dialogView,
@@ -243,7 +246,8 @@ internal class RIMainActivity : AppCompatActivity() {
      * @param rowValues list of values of the clicked row
      */
     private fun updateRow(columnNames: List<String>, rowValues: List<String>) {
-        val dialogView = DialogView(this).create(columnNames, rowValues)
+        val dialogView = DialogView(this)
+            .create(columnNames, rowValues)
         showAlert(
             getString(R.string.ri_title_update_row),
             dialogView,

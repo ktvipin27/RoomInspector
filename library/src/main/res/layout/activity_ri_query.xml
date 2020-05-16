@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        tools:context=".activity.RIQueryActivity">
+        tools:context=".view.RIQueryActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

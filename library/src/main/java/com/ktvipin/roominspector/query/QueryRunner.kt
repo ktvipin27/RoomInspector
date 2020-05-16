@@ -11,7 +11,7 @@ import com.ktvipin.roominspector.util.RowsAndColumns
  *
  * Created by Vipin KT on 14/05/20
  */
-internal object QueryRunner {
+object QueryRunner {
     private lateinit var database: SupportSQLiteDatabase
 
     /**
