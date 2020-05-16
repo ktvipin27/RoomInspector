@@ -16,14 +16,10 @@ import com.ktvipin.roominspector.R
  * Created by Vipin KT on 15/05/20
  *
  * @param context Context
- * @param columnNames list of strings which will be displayed in TextView's
- * @param values list of strings which will be displayed in EditText's
  */
 @SuppressLint("ViewConstructor")
 class DialogView(
-    context: Context,
-    private val columnNames: List<String>,
-    private val values: List<String>
+    context: Context
 ) : ScrollView(context) {
     private val editTextTopMargin: Int by lazy {
         resources.getDimension(R.dimen.ri_margin_top_dialog_add_row_item).toInt()
@@ -64,9 +60,12 @@ class DialogView(
         get() = etList.map { it.text.toString() }
 
     /**
-     * Creates the class itself by looping the given columnNames and values.
+     * Creates the view by looping the given columnNames and values.
+     *
+     * @param columnNames list of strings which will be displayed in TextView's
+     * @param values list of strings which will be displayed in EditText's
      */
-    init {
+    fun create(columnNames: List<String>, values: List<String>): DialogView {
         Pair(columnNames, values).forEach { columnName, value ->
             val tv = TextView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
@@ -110,5 +109,6 @@ class DialogView(
             mainLayout.addView(row)
         }
         addView(mainLayout)
+        return this
     }
 }

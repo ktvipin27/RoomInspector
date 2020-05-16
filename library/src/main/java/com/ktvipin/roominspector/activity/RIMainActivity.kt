@@ -215,7 +215,7 @@ internal class RIMainActivity : AppCompatActivity() {
         QueryRunner.query(QueryBuilder getColumnNames selectedTableName, { result ->
             val columns = result.second.map { it[1] }
             val rows = result.second.map { "" }
-            val dialogView = DialogView(this, columns, rows)
+            val dialogView = DialogView(this).create(columns, rows)
             showAlert(
                 getString(R.string.ri_title_add_row),
                 dialogView,
@@ -243,7 +243,7 @@ internal class RIMainActivity : AppCompatActivity() {
      * @param rowValues list of values of the clicked row
      */
     private fun updateRow(columnNames: List<String>, rowValues: List<String>) {
-        val dialogView = DialogView(this, columnNames, rowValues)
+        val dialogView = DialogView(this).create(columnNames, rowValues)
         showAlert(
             getString(R.string.ri_title_update_row),
             dialogView,
