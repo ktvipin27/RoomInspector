@@ -15,6 +15,15 @@ Built with ❤︎ by [Vipin KT](https://twitter.com/ktvipin27)
 * Drop tables
 * Custom queries
 
+## Installation
+
+Add this in your app's build.gradle file:
+```groovy
+  dependencies {
+       implementation 'com.ktvipin:roominspector:1.0.0'
+  }
+```
+
 ## Usage
 
 To inspect your Room database with RoomInspector, just call the `inspect()` method by passing your database class and database name.
