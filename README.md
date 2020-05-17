@@ -18,11 +18,27 @@ Built with ❤︎ by [Vipin KT](https://twitter.com/ktvipin27)
 ## Installation
 
 Add this in your app's build.gradle file:
+
+<details open>
+<summary>Groovy</summary>
+  
 ```groovy
   dependencies {
        implementation 'com.ktvipin:roominspector:1.0.0'
   }
 ```
+
+</details>
+<details open>
+<summary>Kotlin</summary>
+  
+```kotlin
+  dependencies {
+       implementation("com.ktvipin:roominspector:1.0.0")
+  }
+```
+
+</details>
 
 ## Usage
 
