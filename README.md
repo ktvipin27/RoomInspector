@@ -1,5 +1,7 @@
-# RoomInspector
+# RoomInspector 
 An in-app database inspector for [Android Room](https://developer.android.com/topic/libraries/architecture/room) databases.
+
+[ ![Download](https://api.bintray.com/packages/ktvipin27/RoomInspector/com.ktvipin.roominspector/images/download.svg) ](https://bintray.com/ktvipin27/RoomInspector/com.ktvipin.roominspector/_latestVersion)
 
 <img src="https://github.com/ktvipin27/RoomInspector/blob/master/preview/preview.gif?raw=true" width="240" height="480" />
 
