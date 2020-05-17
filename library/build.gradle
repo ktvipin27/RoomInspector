@@ -18,6 +18,30 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+ext {
+    bintrayRepo = 'RoomInspector'
+    bintrayName = 'com.ktvipin.roominspector'
+
+    publishedGroupId = 'com.ktvipin'
+    libraryName = 'library'
+    artifact = 'roominspector'
+
+    libraryDescription = 'An in-app database inspector for Room databases.'
+
+    siteUrl = 'https://github.com/ktvipin27/RoomInspector'
+    gitUrl = 'https://github.com/ktvipin27/RoomInspector.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'ktvipin27'
+    developerName = 'Vipin KT'
+    developerEmail = 'ktvipin27@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -53,3 +77,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.material:material:1.1.0'
 }
+apply from: 'publish.gradle'
