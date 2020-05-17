@@ -31,7 +31,7 @@ ext {
     siteUrl = 'https://github.com/ktvipin27/RoomInspector'
     gitUrl = 'https://github.com/ktvipin27/RoomInspector.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'ktvipin27'
     developerName = 'Vipin KT'
@@ -47,10 +47,10 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
