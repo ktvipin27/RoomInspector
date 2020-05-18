@@ -139,6 +139,8 @@ class RIMainActivity : AppCompatActivity() {
      * Display's the data of the selected table in a table view.
      */
     private fun displayData() {
+        hsv.scrollTo(0, 0)
+        nsv.scrollTo(0, 0)
         hsv.removeAllViews()
         QueryRunner.query(QueryBuilder getAllValues selectedTableName, { result ->
             val columns = result.first

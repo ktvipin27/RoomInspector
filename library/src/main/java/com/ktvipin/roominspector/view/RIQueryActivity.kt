@@ -39,6 +39,8 @@ class RIQueryActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         btn_submit.setOnClickListener {
+            hsv.scrollTo(0, 0)
+            nsv.scrollTo(0, 0)
             hsv.removeAllViews()
             val query = et_query.text.toString()
             if (query.isEmpty()) return@setOnClickListener
