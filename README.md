@@ -48,9 +48,22 @@ Add this in your app's build.gradle file:
 
 To inspect your Room database with RoomInspector, just call the `inspect()` method by passing your database class and database name.
 
+<details open>
+<summary>Java</summary>
+  
 ```kotlin
+   RoomInspector.INSTANCE.inspect(context, MyDatabase.class, MyDatabase.DB_NAME);
+```
+
+</details>
+<details open>
+<summary>Kotlin</summary>
+  
+  ```kotlin
    RoomInspector.inspect(context, MyDatabase::class.java, MyDatabase.DB_NAME)
 ```
+  
+</details>
 
 ## License    
 
