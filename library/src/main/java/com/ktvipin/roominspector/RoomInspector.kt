@@ -48,6 +48,7 @@ object RoomInspector {
      * @param dbClass A subclass of [RoomDatabase] registered in [Room] with @Database annotation
      * @param dbName The name of [dbClass]
      */
+    @JvmStatic
     fun inspect(
         context: Context,
         dbClass: Class<out RoomDatabase>,

@@ -17,6 +17,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
 ext {
     bintrayRepo = 'RoomInspector'
@@ -25,13 +27,12 @@ ext {
     publishedGroupId = 'com.ktvipin'
     libraryName = 'library'
     artifact = 'roominspector'
-
     libraryDescription = 'An in-app database inspector for Room databases.'
+    libraryVersion = '1.0.2'
 
     siteUrl = 'https://github.com/ktvipin27/RoomInspector'
     gitUrl = 'https://github.com/ktvipin27/RoomInspector.git'
-
-    libraryVersion = '1.0.1'
+    githubRepository= 'ktvipin27/RoomInspector'
 
     developerId = 'ktvipin27'
     developerName = 'Vipin KT'
@@ -50,7 +51,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 2
-        versionName "1.0.1"
+        versionName "1.0.2"
 
         consumerProguardFiles 'consumer-rules.pro'
     }
@@ -68,7 +69,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.room:room-runtime:2.2.5'
 }
 apply from: 'publish.gradle'

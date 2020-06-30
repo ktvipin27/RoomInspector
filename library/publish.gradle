@@ -27,7 +27,6 @@ install {
                 packaging 'aar'
                 groupId publishedGroupId
                 artifactId artifact
-
                 name libraryName
                 description libraryDescription
                 url siteUrl
@@ -56,20 +55,27 @@ install {
     }
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+// Avoid Kotlin docs error
+tasks.withType(Javadoc) {
+    enabled = false
 }
 
+// Remove javadoc related tasks
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
+
 artifacts {
     archives javadocJar
     archives sourcesJar
@@ -79,8 +85,8 @@ Properties properties = new Properties()
 properties.load(project.file('publish.properties').newDataInputStream())
 
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = System.getenv("bintrayUser")
+    key = System.getenv("bintrayApiKey")
 
     configurations = ['archives']
     pkg {

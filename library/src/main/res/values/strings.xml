@@ -21,6 +21,7 @@
     <string name="ri_action_add_row">Add Row</string>
     <string name="ri_action_delete_table">Delete Table</string>
     <string name="ri_action_drop_table">Drop Table</string>
+    <string name="ri_action_export">Export Table</string>
     <string name="ri_action_custom_query">Custom Query</string>
     <string name="ri_action_submit">Submit</string>
     <string name="ri_action_update">Update</string>

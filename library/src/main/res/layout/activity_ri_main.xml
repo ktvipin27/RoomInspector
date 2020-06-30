@@ -26,18 +26,19 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="3dp">
+        android:elevation="3dp"
+        android:padding="5dp"
+        tools:ignore="UnusedAttribute">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
+            android:layout_height="match_parent"
             android:background="@drawable/ri_bg_rounded_corner">
 
             <Spinner
                 android:id="@+id/sp_table"
                 android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                android:layout_height="match_parent" />
         </FrameLayout>
     </androidx.appcompat.widget.Toolbar>
 

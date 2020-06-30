@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.activity_ri_query.*
  *
  * Created by Vipin KT on 14/05/20
  */
-class RIQueryActivity : AppCompatActivity() {
+internal class RIQueryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
