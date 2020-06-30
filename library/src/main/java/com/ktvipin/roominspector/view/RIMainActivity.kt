@@ -90,7 +90,6 @@ internal class RIMainActivity : AppCompatActivity() {
 
         parseIntent()
         getTableNames()
-        //StrictMode.setVmPolicy(VmPolicy.Builder().build())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
