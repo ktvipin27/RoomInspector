@@ -35,7 +35,7 @@ import androidx.appcompat.app.AppCompatActivity
  *
  * @receiver [AppCompatActivity]
  */
-fun AppCompatActivity.refreshActivity() {
+internal fun AppCompatActivity.refreshActivity() {
     finish()
     startActivity(intent)
 }
@@ -46,7 +46,7 @@ fun AppCompatActivity.refreshActivity() {
  * @param messageId string ref id of the message to be displayed
  * @receiver [Context]
  */
-fun Context.toast(messageId: Int) = toast(getString(messageId))
+internal fun Context.toast(messageId: Int) = toast(getString(messageId))
 
 /**
  * Shows a toast message.
@@ -54,7 +54,7 @@ fun Context.toast(messageId: Int) = toast(getString(messageId))
  * @param message message to be displayed
  * @receiver [Context]
  */
-fun Context.toast(message: String) {
+internal fun Context.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
         setGravity(Gravity.CENTER, 0, 0)
     }.show()
@@ -69,7 +69,7 @@ fun Context.toast(message: String) {
  * @param onSubmit function to be called on clicking positive button
  * @receiver [AppCompatActivity]
  */
-fun AppCompatActivity.showAlert(
+internal fun AppCompatActivity.showAlert(
     title: String,
     message: String,
     positiveButton: String,
@@ -85,7 +85,7 @@ fun AppCompatActivity.showAlert(
  * @param onSubmit function to be called on clicking positive button
  * @receiver [AppCompatActivity]
  */
-fun AppCompatActivity.showAlert(
+internal fun AppCompatActivity.showAlert(
     title: String,
     view: View,
     positiveButton: String,
@@ -132,7 +132,7 @@ private fun AppCompatActivity.showDialog(
  *
  * @receiver [AppCompatActivity]
  */
-fun AppCompatActivity.hideKeyboard() {
+internal fun AppCompatActivity.hideKeyboard() {
     val view = this.currentFocus
     if (view != null) {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -144,7 +144,7 @@ fun AppCompatActivity.hideKeyboard() {
  * Loops multiple list at same time and performs the given [action] on each element of this [Iterator]s.
  * @param [action] function that takes elements of lists itself and performs the desired action on the element.
  */
-fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(action: (A, B) -> Unit) {
+internal fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(action: (A, B) -> Unit) {
     val ia = first.iterator()
     val ib = second.iterator()
 
@@ -162,7 +162,7 @@ fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEach(action: (A, B) -> Unit) {
  * @param [action] function that takes the index of an element and the elements of the lists itself
  * and performs the desired action on the element.
  */
-fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEachIndexed(action: (Int, A, B) -> Unit) {
+internal fun <A, B> Pair<Iterable<A>, Iterable<B>>.forEachIndexed(action: (Int, A, B) -> Unit) {
     val ia = first.iterator().withIndex()
     val ib = second.iterator().withIndex()
 

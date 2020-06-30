@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.activity_ri_main.*
  *
  * Created by Vipin KT on 08/05/20
  */
-class RIMainActivity : AppCompatActivity() {
+internal class RIMainActivity : AppCompatActivity() {
 
     /**
      * Adapter for table names.
