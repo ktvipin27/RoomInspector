@@ -81,9 +81,6 @@ artifacts {
     archives sourcesJar
 }
 
-Properties properties = new Properties()
-properties.load(project.file('publish.properties').newDataInputStream())
-
 bintray {
     user = System.getenv("bintrayUser")
     key = System.getenv("bintrayApiKey")
