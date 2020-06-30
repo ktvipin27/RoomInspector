@@ -16,7 +16,6 @@
 
 package com.ktvipin.roominspector.view
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -25,6 +24,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.iterator
 import androidx.room.RoomDatabase
@@ -299,7 +299,8 @@ internal class RIMainActivity : AppCompatActivity() {
         val exportDir = File(cacheDir, "")
         if (!exportDir.exists()) exportDir.mkdirs()
 
-        val file = File(exportDir, "$selectedTableName.csv")
+        val fileName = "$selectedTableName.csv"
+        val file = File(exportDir, fileName)
         try {
             file.createNewFile()
             val csvWrite = CSVWriter(FileWriter(file))
@@ -321,20 +322,18 @@ internal class RIMainActivity : AppCompatActivity() {
 
     private fun shareFile(file: File) {
         if (file.exists()) {
-            val intentShareFile = Intent(Intent.ACTION_SEND)
-                .apply {
-                    type = "text/csv"
-                    val uri = FileProvider.getUriForFile(
-                        this@RIMainActivity,
-                        "${BuildConfig.LIBRARY_PACKAGE_NAME}.fileprovider",
-                        file
-                    )
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    putExtra(Intent.EXTRA_SUBJECT, "Sharing File...")
-                    putExtra(Intent.EXTRA_TEXT, "Sharing File...")
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-            startActivity(Intent.createChooser(intentShareFile, "Share File"))
+            val uri = FileProvider.getUriForFile(
+                this@RIMainActivity,
+                "${BuildConfig.LIBRARY_PACKAGE_NAME}.fileprovider",
+                file
+            )
+            val shareChooserIntent = ShareCompat.IntentBuilder
+                .from(this)
+                .addStream(uri)
+                .setChooserTitle("Share File")
+                .setType("text/csv")
+                .createChooserIntent()
+            startActivity(shareChooserIntent)
         }
     }
 }

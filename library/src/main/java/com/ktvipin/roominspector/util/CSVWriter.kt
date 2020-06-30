@@ -47,8 +47,7 @@ internal class CSVWriter @JvmOverloads constructor(
      * a string array with each comma-separated element as a separate
      * entry.
      */
-    fun writeNext(nextLine: Array<String?>?) {
-        if (nextLine == null) return
+    fun writeNext(nextLine: Array<String?>) {
         val sb = StringBuffer()
         for (i in nextLine.indices) {
             if (i != 0) {
