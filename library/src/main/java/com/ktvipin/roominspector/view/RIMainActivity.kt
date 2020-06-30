@@ -16,6 +16,7 @@
 
 package com.ktvipin.roominspector.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -106,7 +107,7 @@ internal class RIMainActivity : AppCompatActivity() {
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
         R.id.action_export -> true.also { export() }
-        R.id.action_custom -> true.also { RoomInspector.query(this) }
+        R.id.action_custom -> true.also { startActivity(Intent(this, RIQueryActivity::class.java)) }
         else -> super.onOptionsItemSelected(item)
     }
 

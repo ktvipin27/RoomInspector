@@ -22,7 +22,6 @@ import androidx.core.os.bundleOf
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ktvipin.roominspector.view.RIMainActivity
-import com.ktvipin.roominspector.view.RIQueryActivity
 
 /**
  * An in-app database inspector for your [RoomDatabase].
@@ -60,19 +59,6 @@ object RoomInspector {
                     bundleOf(KEY_DATABASE_CLASS to dbClass, KEY_DATABASE_NAME to dbName)
                 )
             }
-            .also { context.startActivity(it) }
-    }
-
-    /**
-     * Launches [RIQueryActivity] from [RIMainActivity].
-     * (for internal purpose)
-     *
-     * @param context RIMainActivity context
-     */
-    internal fun query(
-        context: RIMainActivity
-    ) {
-        Intent(context, RIQueryActivity::class.java)
             .also { context.startActivity(it) }
     }
 }
