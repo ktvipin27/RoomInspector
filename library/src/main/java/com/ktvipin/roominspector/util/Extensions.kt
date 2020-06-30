@@ -55,7 +55,7 @@ internal fun Context.toast(messageId: Int) = toast(getString(messageId))
  * @receiver [Context]
  */
 internal fun Context.toast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
+    Toast.makeText(this, message, Toast.LENGTH_LONG).apply {
         setGravity(Gravity.CENTER, 0, 0)
     }.show()
 }

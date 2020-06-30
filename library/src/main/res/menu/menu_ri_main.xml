@@ -29,6 +29,9 @@
         android:id="@+id/action_drop"
         android:title="@string/ri_action_drop_table" />
     <item
+        android:id="@+id/action_export"
+        android:title="@string/ri_action_export" />
+    <item
         android:id="@+id/action_custom"
         android:title="@string/ri_action_custom_query" />
 </menu>

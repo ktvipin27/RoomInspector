@@ -25,6 +25,16 @@
             android:name="com.ktvipin.roominspector.view.RIQueryActivity"
             android:label="@string/ri_action_custom_query"
             android:theme="@style/RITheme.Child" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.ktvipin.roominspector.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>

@@ -16,23 +16,30 @@
 
 package com.ktvipin.roominspector.view
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.iterator
 import androidx.room.RoomDatabase
+import com.ktvipin.roominspector.BuildConfig
 import com.ktvipin.roominspector.R
 import com.ktvipin.roominspector.RoomInspector
 import com.ktvipin.roominspector.query.QueryBuilder
 import com.ktvipin.roominspector.query.QueryRunner
+import com.ktvipin.roominspector.util.CSVWriter
 import com.ktvipin.roominspector.util.refreshActivity
 import com.ktvipin.roominspector.util.showAlert
 import com.ktvipin.roominspector.util.toast
 import kotlinx.android.synthetic.main.activity_ri_main.*
+import java.io.File
+import java.io.FileWriter
 
 /**
  * The main activity of the  [RoomInspector].
@@ -83,6 +90,7 @@ internal class RIMainActivity : AppCompatActivity() {
 
         parseIntent()
         getTableNames()
+        //StrictMode.setVmPolicy(VmPolicy.Builder().build())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -98,6 +106,7 @@ internal class RIMainActivity : AppCompatActivity() {
         R.id.action_add -> true.also { addRow() }
         R.id.action_delete -> true.also { deleteTable() }
         R.id.action_drop -> true.also { dropTable() }
+        R.id.action_export -> true.also { export() }
         R.id.action_custom -> true.also { RoomInspector.query(this) }
         else -> super.onOptionsItemSelected(item)
     }
@@ -283,6 +292,49 @@ internal class RIMainActivity : AppCompatActivity() {
             }, {
                 toast(getString(R.string.ri_error_operation_failed, it.message))
             })
+        }
+    }
+
+    private fun export() {
+        val exportDir = File(cacheDir, "")
+        if (!exportDir.exists()) exportDir.mkdirs()
+
+        val file = File(exportDir, "$selectedTableName.csv")
+        try {
+            file.createNewFile()
+            val csvWrite = CSVWriter(FileWriter(file))
+            QueryRunner.query(QueryBuilder getAllValues selectedTableName, { result ->
+                csvWrite.writeNext(result.first.toTypedArray())
+                result.second.forEach {
+                    csvWrite.writeNext(it.toTypedArray())
+                }
+                shareFile(file)
+            }, {
+                toast(getString(R.string.ri_error_operation_failed, it.message))
+            })
+            csvWrite.close()
+        } catch (sqlEx: Exception) {
+            Log.e("MainActivity", sqlEx.message, sqlEx)
+            toast(getString(R.string.ri_error_operation_failed, sqlEx.message))
+        }
+    }
+
+    private fun shareFile(file: File) {
+        if (file.exists()) {
+            val intentShareFile = Intent(Intent.ACTION_SEND)
+                .apply {
+                    type = "text/csv"
+                    val uri = FileProvider.getUriForFile(
+                        this@RIMainActivity,
+                        "${BuildConfig.LIBRARY_PACKAGE_NAME}.fileprovider",
+                        file
+                    )
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    putExtra(Intent.EXTRA_SUBJECT, "Sharing File...")
+                    putExtra(Intent.EXTRA_TEXT, "Sharing File...")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+            startActivity(Intent.createChooser(intentShareFile, "Share File"))
         }
     }
 }
