@@ -41,7 +41,7 @@ Add this in your app's build.gradle file:
   
 ```kotlin
   dependencies {
-       implementation("com.ktvipin:roominspector:1.0.1")
+       implementation("com.ktvipin:roominspector:1.0.2")
   }
 ```
 
