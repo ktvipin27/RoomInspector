@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Vipin KT
+ * Copyright 2021 Vipin KT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.ktvipin.roominspector.util
 
 import android.content.Context
-import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -55,9 +54,7 @@ internal fun Context.toast(messageId: Int) = toast(getString(messageId))
  * @receiver [Context]
  */
 internal fun Context.toast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).apply {
-        setGravity(Gravity.CENTER, 0, 0)
-    }.show()
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
 /**

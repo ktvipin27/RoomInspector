@@ -57,7 +57,7 @@ To inspect your Room database with RoomInspector, just call the `inspect()` meth
 
 ## License    
 
-    Copyright 2020 Vipin KT
+    Copyright 2021 Vipin KT
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

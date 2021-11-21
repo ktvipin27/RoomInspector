@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Vipin KT
+ * Copyright 2021 Vipin KT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ktvipin.roominspector.sample
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ktvipin.roominspector.RoomInspector
@@ -28,7 +27,7 @@ import java.util.*
 /**
  * Created by Vipin KT on 08/05/20
  */
-class KotlinActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val db: AppDatabase by lazy { AppDatabase.getInstance(this) }
 
@@ -36,7 +35,6 @@ class KotlinActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "${getString(R.string.app_name)} Kotlin"
 
         val genders = arrayOf("Male", "Female")
         val phoneNumberRange = 9900000000..9999999999
@@ -61,10 +59,6 @@ class KotlinActivity : AppCompatActivity() {
 
         button3.setOnClickListener {
             RoomInspector.inspect(this, AppDatabase::class.java, AppDatabase.DB_NAME)
-        }
-
-        button0.setOnClickListener {
-            startActivity(Intent(this, JavaActivity::class.java))
         }
     }
 }
