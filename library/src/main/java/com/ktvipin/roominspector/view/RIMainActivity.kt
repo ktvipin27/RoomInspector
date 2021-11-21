@@ -327,8 +327,7 @@ internal class RIMainActivity : AppCompatActivity() {
                 "${BuildConfig.LIBRARY_PACKAGE_NAME}.fileprovider",
                 file
             )
-            val shareChooserIntent = ShareCompat.IntentBuilder
-                .from(this)
+            val shareChooserIntent = ShareCompat.IntentBuilder(this)
                 .addStream(uri)
                 .setChooserTitle("Share File")
                 .setType("text/csv")
