@@ -1,7 +1,6 @@
 # <img src="https://github.com/ktvipin27/RoomInspector/blob/master/preview/RoomInspector (1).png?raw=true" height="60" />
 
-
-[ ![Download](https://api.bintray.com/packages/ktvipin27/RoomInspector/com.ktvipin.roominspector/images/download.svg) ](https://bintray.com/ktvipin27/RoomInspector/com.ktvipin.roominspector/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.ktvipin27/room-inspector/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.ktvipin27/room-inspector) 
 [![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=19) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/zerobranch/android-remote-debugger/blob/master/LICENSE)
 
 An in-app database inspector for [Android Room](https://developer.android.com/topic/libraries/architecture/room) databases.
@@ -31,7 +30,7 @@ Add this in your app's build.gradle file:
   
 ```groovy
   dependencies {
-       implementation 'com.ktvipin:roominspector:1.0.2'
+       implementation 'io.github.ktvipin27:room-inspector:1.0.3'
   }
 ```
 
@@ -41,7 +40,7 @@ Add this in your app's build.gradle file:
   
 ```kotlin
   dependencies {
-       implementation("com.ktvipin:roominspector:1.0.2")
+       implementation("io.github.ktvipin27:room-inspector:1.0.3")
   }
 ```
 
@@ -51,8 +50,14 @@ Add this in your app's build.gradle file:
 
 To inspect your Room database with RoomInspector, just call the `inspect()` method by passing your database class and database name.
 
+Kotlin
 ```kotlin
   RoomInspector.inspect(context, MyDatabase::class.java, MyDatabase.DB_NAME)
+```
+
+Java
+```java
+  RoomInspector.inspect(context, MyDatabase.class, MyDatabase.DB_NAME)
 ```
 
 ## License    
